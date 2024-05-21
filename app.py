@@ -1,6 +1,7 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 from home import run_home
+from search import run_search
 
 
 def main():
@@ -11,9 +12,10 @@ def main():
     # 각 메뉴에 대한 동작 정의
     if selected == '홈':
         run_home()
+
     elif selected == '기록 조회':
-        st.title('기록 조회')
-        st.write('여기에서 기록을 조회할 수 있습니다.')
+        run_search()
+
     elif selected == '기록 예측':
         st.title('기록 예측')
         st.write('여기에서 기록을 예측할 수 있습니다.')
