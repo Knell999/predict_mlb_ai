@@ -1,7 +1,10 @@
+# app.py
+
 import streamlit as st
 from streamlit_option_menu import option_menu
 from home import run_home
 from search import run_search
+from predict import run_predict
 
 
 def main():
@@ -9,16 +12,12 @@ def main():
         selected = option_menu('대시보드 메뉴', ['홈', '기록 조회', '기록 예측'],
                                icons=['house', 'file-bar-graph', 'graph-up-arrow'], menu_icon='cast', default_index=0)
 
-    # 각 메뉴에 대한 동작 정의
     if selected == '홈':
         run_home()
-
     elif selected == '기록 조회':
         run_search()
-
     elif selected == '기록 예측':
-        st.title('기록 예측')
-        st.write('여기에서 기록을 예측할 수 있습니다.')
+        run_predict()
 
 
 if __name__ == "__main__":
