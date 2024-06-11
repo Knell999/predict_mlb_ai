@@ -40,10 +40,13 @@ pitching_moving_avg_10 = calculate_moving_average(pitching_league_avg, pitching_
 pitching_moving_avg_20 = calculate_moving_average(pitching_league_avg, pitching_metrics, 20)
 
 def plot_metric(ax, metric, league_avg, moving_avg_5, moving_avg_10, moving_avg_20):
-    sns.lineplot(data=league_avg, x='Season', y=metric, ax=ax, marker='o', label='리그 평균')
-    sns.lineplot(data=moving_avg_5, x='Season', y=metric, ax=ax, linestyle='--', color='gray', label='5개년 이동평균')
-    sns.lineplot(data=moving_avg_10, x='Season', y=metric, ax=ax, linestyle='-.', color='blue', label='10개년 이동평균')
-    sns.lineplot(data=moving_avg_20, x='Season', y=metric, ax=ax, linestyle=':', color='red', label='20개년 이동평균')
+    sns.lineplot(data=league_avg, x='Season', y=metric, ax=ax, marker='o', label='League Average')
+    sns.lineplot(data=moving_avg_5, x='Season', y=metric, ax=ax, linestyle='--', color='gray',
+                 label='5-Year Moving Average')
+    sns.lineplot(data=moving_avg_10, x='Season', y=metric, ax=ax, linestyle='-.', color='blue',
+                 label='10-Year Moving Average')
+    sns.lineplot(data=moving_avg_20, x='Season', y=metric, ax=ax, linestyle=':', color='red',
+                 label='20-Year Moving Average')
     ax.set_title(f"리그 평균 {metric} 변화", fontproperties=fontprop)
     ax.set_xlabel('Season', fontproperties=fontprop)
     ax.set_ylabel(metric, fontproperties=fontprop)
