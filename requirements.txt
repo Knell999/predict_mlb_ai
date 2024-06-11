@@ -1,0 +1,12 @@
+streamlit
+streamlit_option_menu
+PIL
+pandas
+matplotlib.pyplot
+matplotlib.font_manager
+matplotlib.ticker
+matplotlib
+seaborn
+requests
+bs4
+prophet
