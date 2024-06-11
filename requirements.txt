@@ -1,10 +1,7 @@
 streamlit
-streamlit_option_menu
+streamlit-option-menu
 PIL
 pandas
-matplotlib.pyplot
-matplotlib.font_manager
-matplotlib.ticker
 matplotlib
 seaborn
 requests
