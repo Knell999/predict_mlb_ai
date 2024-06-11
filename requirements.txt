@@ -1,6 +1,6 @@
 streamlit
 streamlit-option-menu
-PIL
+Pillow
 pandas
 matplotlib
 seaborn
