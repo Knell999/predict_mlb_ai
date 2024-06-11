@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/bigdata_project.iml" filepath="$PROJECT_DIR$/.idea/bigdata_project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../streamlit-book-seoul/.idea/streamlit-book-seoul.iml" filepath="$PROJECT_DIR$/../streamlit-book-seoul/.idea/streamlit-book-seoul.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../University/2024_1st_semester/AI_Service_Project/week11/.idea/week11.iml" filepath="$PROJECT_DIR$/../../University/2024_1st_semester/AI_Service_Project/week11/.idea/week11.iml" />
+    </modules>
+  </component>
+</project>
