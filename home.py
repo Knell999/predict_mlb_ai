@@ -5,7 +5,7 @@ def run_home():
     st.title("⚾️ MLB 선수 기록 조회 및 예측 서비스 ⚾️")
 
     # 이미지 폭 조절
-    st.image("mlb_players.jpg", use_column_width='always')
+    st.image("mlb_players.jpg",  use_container_width='always')
 
     st.markdown(
         """

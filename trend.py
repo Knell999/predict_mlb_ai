@@ -1,3 +1,4 @@
+# filepath: c:\Users\user\Desktop\working\personal\mlb\predict_mlb\trend.py
 import streamlit as st
 from streamlit_option_menu import option_menu
 import pandas as pd
@@ -311,5 +312,3 @@ def run_trend():
 
 if __name__ == "__main__":
     run_trend()
-
-
