@@ -7,7 +7,7 @@ from trend import run_trend
 from PIL import Image
 
 # 페이지 제목 설정 (반드시 코드의 맨 처음 부분에 위치)
-st.set_page_config(page_title="MLB 선수 분석 대시보드", page_icon="⚾️", layout="wide")
+#st.set_page_config(page_title="MLB 선수 분석 대시보드", page_icon="⚾️", layout="wide")
 
 def main():
     # 사이드바 설정 및 메뉴 옵션 정의
