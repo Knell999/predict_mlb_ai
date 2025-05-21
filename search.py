@@ -1,11 +1,12 @@
 import streamlit as st
-from streamlit_option_menu import option_menu
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from utils import load_data, load_pitcher_data
 import matplotlib.font_manager as fm
+from streamlit_option_menu import option_menu
+from utils import load_data, load_pitcher_data
 from matplotlib.ticker import MaxNLocator
+from i18n import get_text
 
 path = 'font/H2GTRM.TTF'
 fontprop = fm.FontProperties(fname=path, size=12)
@@ -15,6 +16,16 @@ df_pitchers = load_pitcher_data()
 
 # 리그 평균 계산 함수 추가
 def calculate_league_averages(df, metrics):
+    """
+    시즌별 리그 평균을 계산하는 함수입니다.
+    
+    Args:
+        df: 분석할 데이터프레임
+        metrics: 계산할 지표들의 리스트
+        
+    Returns:
+        시즌별로 그룹화된 리그 평균 데이터프레임
+    """
     league_averages = df.groupby('Season')[metrics].mean().reset_index()
     return league_averages
 
@@ -25,13 +36,22 @@ pitching_metrics = ['EarnedRunAverage', 'Whip', 'Wins', 'Losses', 'StrikeOuts', 
 batting_league_avg = calculate_league_averages(df, batting_metrics)
 pitching_league_avg = calculate_league_averages(df_pitchers, pitching_metrics)
 
-def run_search():
-    st.title("MLB 선수 기록 조회👁️")
+def run_search(lang="ko"):
+    """MLB 선수 기록을 조회하고 시각화하는 함수입니다."""
+    st.title(get_text("search_title", lang))
 
+    menu_options = {
+        'ko': ['타자(선수기준)', '타자(시즌기준)', '투수(선수기준)', '투수(시즌기준)'],
+        'en': ['Batters (By Player)', 'Batters (By Season)', 'Pitchers (By Player)', 'Pitchers (By Season)'],
+        'ja': ['打者(選手基準)', '打者(シーズン基準)', '投手(選手基準)', '投手(シーズン基準)']
+    }
+    
+    selected_lang_options = menu_options.get(lang, menu_options['ko'])
+    
     selected = option_menu(
         None,
-        ['타자(선수기준)', '타자(시즌기준)', '투수(선수기준)', '투수(시즌기준)'],
-        icons=['person', 'calendar', 'person', 'calendar'],
+        selected_lang_options,
+        icons=['person-fill', 'calendar-date', 'person', 'calendar'],
         menu_icon='cast',
         default_index=0,
         orientation='horizontal',
@@ -49,7 +69,7 @@ def run_search():
             league_avg = league_avg[league_avg['Season'] == season]
 
         player_names = [""] + sorted(data['PlayerName'].unique())
-        player = st.selectbox('선수를 선택하세요:', player_names, index=0)
+        player = st.selectbox(get_text('select_player', lang), player_names, index=0)
 
         if player:
             player_data = data[data['PlayerName'] == player].sort_values(by='Season')

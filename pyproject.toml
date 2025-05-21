@@ -1,7 +1,7 @@
 [project]
 name = "predict-mlb"
 version = "0.1.0"
-description = "Add your description here"
+description = "MLB 선수 기록 조회 및 예측 서비스"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -44,4 +44,19 @@ dependencies = [
     "tzdata==2025.2",
     "urllib3==2.4.0",
     "watchdog==6.0.0 ; sys_platform != 'darwin'",
+    "prophet>=1.1.4",
+    "matplotlib>=3.7.1",
+    "seaborn>=0.12.2",
+    "streamlit-option-menu>=0.3.2",
 ]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/predict_mlb"
+Issues = "https://github.com/yourusername/predict_mlb/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true

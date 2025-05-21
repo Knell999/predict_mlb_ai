@@ -1,38 +1,97 @@
 import streamlit as st
+
+# 페이지 제목 설정 (반드시 코드의 맨 처음 부분에 위치)
+st.set_page_config(page_title="MLB 선수 분석 대시보드", page_icon="⚾️", layout="wide")
+
+# 나머지 임포트문들
 from streamlit_option_menu import option_menu
+import time
+import datetime
 from home import run_home
 from search import run_search
 from predict import run_predict
 from trend import run_trend
 from PIL import Image
+from utils import set_chart_style
+from app_metrics import init_metrics, timing_decorator
+from i18n import get_text, get_languages
 
-# 페이지 제목 설정 (반드시 코드의 맨 처음 부분에 위치)
-#st.set_page_config(page_title="MLB 선수 분석 대시보드", page_icon="⚾️", layout="wide")
+# 테마와 메트릭 초기화
+set_chart_style()
+metric_tracker = init_metrics()
 
+@timing_decorator
 def main():
+    """MLB 선수 분석 대시보드 메인 함수"""
+    
+    # 세션 상태에 언어 설정이 없으면 기본값 설정
+    if 'lang' not in st.session_state:
+        st.session_state.lang = "ko"
+    
     # 사이드바 설정 및 메뉴 옵션 정의
     with st.sidebar:
-        st.title("⚾ MLB 선수 분석 대시보드")
-        logo_image = Image.open("mlb_logo.png")  # MLB 로고 이미지 추가 (파일 이름에 맞게 수정)
-        st.image(logo_image,  use_container_width=True)  # 이미지 폭 조절
+        st.title("⚾ " + get_text("app_title", st.session_state.lang))
+        logo_image = Image.open("mlb_logo.png")  # MLB 로고 이미지 추가
+        st.image(logo_image, use_container_width=True)  # 이미지 폭 조절
+        
+        # 언어 선택 옵션
+        languages = get_languages()
+        selected_lang = st.selectbox(
+            "🌐 Language / 언어",
+            options=list(languages.keys()),
+            format_func=lambda x: languages[x],
+            index=list(languages.keys()).index(st.session_state.lang)
+        )
+        
+        # 언어가 변경되면 세션 상태 업데이트
+        if selected_lang != st.session_state.lang:
+            st.session_state.lang = selected_lang
+            st.rerun()  # 언어 변경 시 앱 다시 실행
+        
         selected = option_menu(
             None,
-            ["홈", "트렌드 분석", "기록 조회", "기록 예측"],
+            [
+                get_text("home", st.session_state.lang), 
+                get_text("trend_analysis", st.session_state.lang), 
+                get_text("search_records", st.session_state.lang), 
+                get_text("predict_records", st.session_state.lang)
+            ],
             icons=["house", "activity", "search", "magic"],
             menu_icon="cast",
             default_index=0,
             orientation="vertical",  # 메뉴 세로 방향으로 변경
         )
+        
+        # 사이드바 하단에 앱 정보 표시
+        st.markdown("---")
+        st.markdown(f"<small>© {datetime.datetime.now().year} MLB Stats App</small>", unsafe_allow_html=True)
+        st.markdown("<small>v1.0.0</small>", unsafe_allow_html=True)
 
+    # 페이지 로깅 및 실행
+    metric_tracker.log_page_view(selected)
+    
     # 페이지별 함수 실행
-    if selected == "홈":
-        run_home()
-    elif selected == "기록 조회":
-        run_search()
-    elif selected == "기록 예측":
-        run_predict()
-    elif selected == "트렌드 분석":
-        run_trend()
+    lang = st.session_state.lang
+    home_text = get_text("home", lang)
+    search_text = get_text("search_records", lang)
+    predict_text = get_text("predict_records", lang)
+    trend_text = get_text("trend_analysis", lang)
+    
+    if selected == home_text:
+        run_home(lang)
+    elif selected == search_text:
+        run_search(lang)
+    elif selected == predict_text:
+        run_predict(lang)
+    elif selected == trend_text:
+        run_trend(lang)
+
+    # 성능 모니터링 - 사이드바 하단에 표시
+    with st.sidebar.expander("📊 앱 성능 메트릭"):
+        metrics = metric_tracker.get_summary()
+        st.write(f"총 페이지뷰: {metrics['total_page_views']}")
+        st.write(f"평균 응답시간: {metrics['avg_response_time']:.2f} ms")
+        st.write(f"에러 수: {metrics['error_count']}")
 
 if __name__ == "__main__":
     main()
