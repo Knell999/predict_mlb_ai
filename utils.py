@@ -15,7 +15,7 @@ def load_data():
         pandas.DataFrame: 타자 데이터
     """
     try:
-        data = pd.read_csv('./mlb_batter_stats_2000_2023.csv')
+        data = pd.read_csv('./data/mlb_batter_stats_2000_2023.csv')
         data = data.reset_index(drop=True)
         return data
     except Exception as e:
@@ -32,7 +32,7 @@ def load_pitcher_data():
         pandas.DataFrame: 투수 데이터
     """
     try:
-        data = pd.read_csv('./mlb_pitcher_stats_2000_2023.csv')
+        data = pd.read_csv('./data/mlb_pitcher_stats_2000_2023.csv')
         data = data.reset_index(drop=True)
         return data
     except Exception as e:

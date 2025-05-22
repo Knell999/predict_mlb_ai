@@ -4,6 +4,12 @@ altair==5.5.0 \
     --hash=sha256:91a310b926508d560fe0148d02a194f38b824122641ef528113d029fcd129f8c \
     --hash=sha256:d960ebe6178c56de3855a68c47b516be38640b73fb3b5111c2a9ca90546dd73d
     # via streamlit
+prophet==1.1.5 \
+    # via predict-mlb
+seaborn==0.13.2 \
+    # via predict-mlb
+matplotlib==3.9.0 \
+    # via seaborn, prophet
 attrs==25.3.0 \
     --hash=sha256:427318ce031701fea540783410126f03899a97ffc6f61596ad581ac2e40e3bc3 \
     --hash=sha256:75d7cefc7fb576747b2c81b4442d4d4a1ce0900973527c011d1030fd3bf4af1b
