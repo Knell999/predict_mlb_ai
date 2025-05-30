@@ -329,3 +329,7 @@ watchdog==6.0.0 ; sys_platform != 'darwin' \
     --hash=sha256:cbafb470cf848d93b5d013e2ecb245d4aa1c8fd0504e863ccefa32445359d680 \
     --hash=sha256:e3df4cbb9a450c6d49318f6d14f4bbc80d763fa587ba46ec86f99f9e6876bb26
     # via streamlit
+
+# Data collection libraries
+pybaseball==2.2.7
+requests==2.32.3

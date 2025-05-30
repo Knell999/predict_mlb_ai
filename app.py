@@ -11,10 +11,12 @@ from home import run_home
 from search import run_search
 from predict import run_predict
 from trend import run_trend
+from data_status import show_data_status
 from PIL import Image
-from utils import set_chart_style
+from utils import set_chart_style, load_logo_image # load_logo_image 추가
 from app_metrics import init_metrics, timing_decorator
 from i18n import get_text, get_languages
+from config import MLB_LOGO_PATH # 설정 파일에서 로고 경로 가져오기
 
 # 테마와 메트릭 초기화
 set_chart_style()
@@ -31,8 +33,13 @@ def main():
     # 사이드바 설정 및 메뉴 옵션 정의
     with st.sidebar:
         st.title("⚾ " + get_text("app_title", st.session_state.lang))
-        logo_image = Image.open("mlb_logo.png")  # MLB 로고 이미지 추가
-        st.image(logo_image, use_container_width=True)  # 이미지 폭 조절
+        
+        # 로고 이미지 로드 (utils.py의 함수 사용)
+        logo_image = load_logo_image(MLB_LOGO_PATH) 
+        if logo_image:
+            st.image(logo_image, use_container_width=True)
+        else:
+            st.warning("로고 이미지를 불러올 수 없습니다.")
         
         # 언어 선택 옵션
         languages = get_languages()
@@ -54,9 +61,10 @@ def main():
                 get_text("home", st.session_state.lang), 
                 get_text("trend_analysis", st.session_state.lang), 
                 get_text("search_records", st.session_state.lang), 
-                get_text("predict_records", st.session_state.lang)
+                get_text("predict_records", st.session_state.lang),
+                "📊 데이터 상태"
             ],
-            icons=["house", "activity", "search", "magic"],
+            icons=["house", "activity", "search", "magic", "database"],
             menu_icon="cast",
             default_index=0,
             orientation="vertical",  # 메뉴 세로 방향으로 변경
@@ -85,6 +93,8 @@ def main():
         run_predict(lang)
     elif selected == trend_text:
         run_trend(lang)
+    elif selected == "📊 데이터 상태":
+        show_data_status()
 
     # 성능 모니터링 - 사이드바 하단에 표시
     with st.sidebar.expander("📊 앱 성능 메트릭"):

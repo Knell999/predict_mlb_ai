@@ -75,3 +75,100 @@ predict_mlb/
 4. **기록 조회**: 선수별 또는 시즌별 기록 조회 및 시각화
 5. **트렌드 분석**: MLB 리그의 여러 지표 변화 추이 시각화
 6. **기록 예측**: 선택한 선수의 향후 성과 예측
+
+## 데이터 업데이트 방법
+
+### 🔄 자동 업데이트 (권장)
+
+최신 MLB 데이터를 자동으로 수집하는 여러 가지 방법을 제공합니다:
+
+#### 1. PyBaseball 사용 (간편한 방법)
+```bash
+# PyBaseball 라이브러리 설치
+pip install pybaseball
+
+# 2024년부터 현재까지 데이터 업데이트
+python update_data.py --method pybaseball --start-year 2024
+
+# 백업과 함께 업데이트
+python update_data.py --method pybaseball --backup
+```
+
+#### 2. MLB 공식 API 사용 (상세한 방법)
+```bash
+# MLB 공식 API를 사용한 업데이트
+python update_data.py --method mlb-api --start-year 2024
+
+# 특정 기간 업데이트
+python update_data.py --method mlb-api --start-year 2023 --end-year 2024
+```
+
+#### 3. 자동 선택 (기본값)
+```bash
+# 자동으로 최적의 방법 선택 (PyBaseball → MLB API 순서)
+python update_data.py --start-year 2024
+
+# 또는 직접 실행
+python pybaseball_processor.py
+python data_processor.py
+```
+
+### 🕒 스케줄러를 통한 자동 업데이트
+
+정기적인 데이터 업데이트를 위한 스케줄러를 제공합니다:
+
+```bash
+# 스케줄러 설치 (필요시)
+pip install schedule
+
+# 일회성 업데이트
+python auto_update.py --mode once
+
+# 지속적인 자동 업데이트 (백그라운드 실행)
+python auto_update.py --mode scheduler
+
+# 또는 nohup으로 백그라운드 실행
+nohup python auto_update.py --mode scheduler > logs/scheduler.log 2>&1 &
+```
+
+**스케줄 정보:**
+- **시즌 중 (3월~10월)**: 매일 오전 6시 자동 업데이트
+- **시즌 외 (11월~2월)**: 매주 일요일 오전 8시 업데이트
+
+### 📊 업데이트 후 확인
+
+데이터 업데이트 후 다음과 같이 확인할 수 있습니다:
+
+```bash
+# 데이터 파일 확인
+ls -la data/
+
+# 최신 데이터 시즌 확인
+python -c "
+import pandas as pd
+batter_df = pd.read_csv('data/mlb_batter_stats_2000_2023.csv')
+print(f'타자 데이터 최신 시즌: {batter_df[\"Season\"].max()}')
+print(f'타자 데이터 총 레코드: {len(batter_df)}')
+
+pitcher_df = pd.read_csv('data/mlb_pitcher_stats_2000_2023.csv')
+print(f'투수 데이터 최신 시즌: {pitcher_df[\"Season\"].max()}')
+print(f'투수 데이터 총 레코드: {len(pitcher_df)}')
+"
+```
+
+### ⚠️ 주의사항
+
+1. **API 제한**: MLB 공식 API는 호출 제한이 있을 수 있습니다. 대량 데이터 수집 시 시간이 오래 걸릴 수 있습니다.
+
+2. **데이터 품질**: PyBaseball은 더 안정적이고 빠르지만, MLB 공식 API가 더 최신 데이터를 제공할 수 있습니다.
+
+3. **백업**: 중요한 데이터의 경우 `--backup` 옵션을 사용하여 기존 데이터를 백업하세요.
+
+4. **네트워크**: 데이터 수집 중 네트워크 연결이 안정적이어야 합니다.
+
+### 🛠️ 문제 해결
+
+- **PyBaseball 설치 오류**: `pip install --upgrade pybaseball` 시도
+- **API 연결 오류**: 네트워크 연결 상태 확인
+- **권한 오류**: 파일 쓰기 권한 확인 (`sudo chmod 755 data/`)
+- **로그 확인**: `logs/` 폴더의 로그 파일 확인

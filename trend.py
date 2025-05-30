@@ -6,9 +6,9 @@ import matplotlib.font_manager as fm
 from streamlit_option_menu import option_menu
 from utils import load_data, load_pitcher_data
 from i18n import get_text
+from config import FONT_PATH # 설정 파일에서 폰트 경로 가져오기
 
-path = 'font/H2GTRM.TTF'
-fontprop = fm.FontProperties(fname=path, size=12)
+fontprop = fm.FontProperties(fname=FONT_PATH, size=12) # 경로 수정
 
 # 리그 평균 계산 함수 추가
 def calculate_league_averages(df, metrics):

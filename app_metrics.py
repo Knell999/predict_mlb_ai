@@ -4,19 +4,20 @@ import pandas as pd
 import logging
 from datetime import datetime
 import os
+from config import LOG_DIR # 설정 파일에서 로그 디렉토리 경로 가져오기
 
 __all__ = ['MetricTracker', 'timing_decorator', 'init_metrics']
 
 # 로그 설정
-log_dir = "logs"
-if not os.path.exists(log_dir):
-    os.makedirs(log_dir)
+# log_dir = "logs" # 기존 코드 주석 처리 또는 삭제
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
 
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(f"{log_dir}/app_{datetime.now().strftime('%Y%m%d')}.log"),
+        logging.FileHandler(os.path.join(LOG_DIR, f"app_{datetime.now().strftime('%Y%m%d')}.log")), # 경로 수정
         logging.StreamHandler()
     ]
 )
