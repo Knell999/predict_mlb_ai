@@ -10,6 +10,20 @@ KO = {
     "trend_analysis": "트렌드 분석",
     "search_records": "기록 조회",
     "predict_records": "기록 예측",
+    "compare_players": "선수 비교",
+
+    # 선수 비교 페이지
+    "select_data_type": "데이터 종류 선택",
+    "batter": "타자",
+    "pitcher": "투수",
+    "select_player_1": "첫 번째 선수 선택",
+    "select_player_2": "두 번째 선수 선택",
+    "select_stats_to_compare": "비교할 스탯 선택",
+    "select_stats_prompt": "비교할 스탯을 하나 이상 선택하세요.",
+    "select_different_players": "서로 다른 두 명의 선수를 선택하세요.",
+    "career_summary": "커리어 통산 비교",
+    "season_by_season": "시즌별 스탯 비교",
+    "no_data_available": "표시할 데이터가 없습니다.",
     
     # 홈 페이지
     "welcome_message": "야구 팬 여러분, 안녕하세요! 👋",
@@ -61,6 +75,20 @@ EN = {
     "trend_analysis": "Trend Analysis",
     "search_records": "Search Records",
     "predict_records": "Predict Records",
+    "compare_players": "Compare Players",
+
+    # Compare Players Page
+    "select_data_type": "Select Data Type",
+    "batter": "Batter",
+    "pitcher": "Pitcher",
+    "select_player_1": "Select Player 1",
+    "select_player_2": "Select Player 2",
+    "select_stats_to_compare": "Select Stats to Compare",
+    "select_stats_prompt": "Please select at least one stat to compare.",
+    "select_different_players": "Please select two different players.",
+    "career_summary": "Career Summary Comparison",
+    "season_by_season": "Season-by-Season Stat Comparison",
+    "no_data_available": "No data available to display.",
     
     # Home page
     "welcome_message": "Hello, baseball fans! 👋",
@@ -112,6 +140,20 @@ JA = {
     "trend_analysis": "トレンド分析",
     "search_records": "記録検索",
     "predict_records": "記録予測",
+    "compare_players": "選手比較",
+
+    # 選手比較ページ
+    "select_data_type": "データタイプ選択",
+    "batter": "打者",
+    "pitcher": "投手",
+    "select_player_1": "選手1を選択",
+    "select_player_2": "選手2を選択",
+    "select_stats_to_compare": "比較するステータスを選択",
+    "select_stats_prompt": "比較するステータスを1つ以上選択してください。",
+    "select_different_players": "異なる2人の選手を選択してください。",
+    "career_summary": "キャリア通算比較",
+    "season_by_season": "シーズン別ステータス比較",
+    "no_data_available": "表示するデータがありません。",
     
     # ホームページ
     "welcome_message": "こんにちは、野球ファンの皆さん！ 👋",
