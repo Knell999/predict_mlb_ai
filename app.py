@@ -1,5 +1,12 @@
 import streamlit as st
 
+# .env 파일 로드 (다른 임포트보다 먼저)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 # 페이지 제목 설정 (반드시 코드의 맨 처음 부분에 위치)
 st.set_page_config(page_title="MLB 선수 분석 대시보드", page_icon="⚾️", layout="wide")
 
