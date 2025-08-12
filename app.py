@@ -1,5 +1,12 @@
 import streamlit as st
 
+# .env 파일 로드 (다른 임포트보다 먼저)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 # 페이지 제목 설정 (반드시 코드의 맨 처음 부분에 위치)
 st.set_page_config(page_title="MLB 선수 분석 대시보드", page_icon="⚾️", layout="wide")
 
@@ -11,6 +18,7 @@ from home import run_home
 from search import run_search
 from predict import run_predict
 from trend import run_trend
+from compare import run_compare
 from data_status import show_data_status
 from PIL import Image
 from utils import set_chart_style, load_logo_image # load_logo_image 추가
@@ -61,10 +69,11 @@ def main():
                 get_text("home", st.session_state.lang), 
                 get_text("trend_analysis", st.session_state.lang), 
                 get_text("search_records", st.session_state.lang), 
+                get_text("compare_players", st.session_state.lang),
                 get_text("predict_records", st.session_state.lang),
                 "📊 데이터 상태"
             ],
-            icons=["house", "activity", "search", "magic", "database"],
+            icons=["house", "activity", "search", "people", "magic", "database"],
             menu_icon="cast",
             default_index=0,
             orientation="vertical",  # 메뉴 세로 방향으로 변경
@@ -84,6 +93,7 @@ def main():
     search_text = get_text("search_records", lang)
     predict_text = get_text("predict_records", lang)
     trend_text = get_text("trend_analysis", lang)
+    compare_text = get_text("compare_players", lang)
     
     if selected == home_text:
         run_home(lang)
@@ -93,6 +103,8 @@ def main():
         run_predict(lang)
     elif selected == trend_text:
         run_trend(lang)
+    elif selected == compare_text:
+        run_compare(lang)
     elif selected == "📊 데이터 상태":
         show_data_status()
 
