@@ -46,10 +46,10 @@ class PlayerAnalysisAI:
         
         # Gemini 모델 초기화
         self.llm = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash",
+            model="gemini-2.5-flash",
             google_api_key=self.api_key,
             temperature=0.3,
-            max_tokens=2048
+            max_tokens=65000
         )
         
         # 프롬프트 템플릿 설정
@@ -101,6 +101,8 @@ class PlayerAnalysisAI:
 
 분석은 데이터에 기반하여 객관적이고 전문적으로 작성하되, {language} 언어로 작성해주세요.
 마크다운 형식을 사용하여 가독성을 높여주세요.
+
+현재 2025년은 진행 중이 시즌임을 감안하여 분석하세요.
 """
         )
         
@@ -147,6 +149,8 @@ class PlayerAnalysisAI:
 
 분석은 데이터에 기반하여 객관적이고 전문적으로 작성하되, {language} 언어로 작성해주세요.
 마크다운 형식을 사용하여 가독성을 높여주세요.
+
+현재 2025년은 진행 중이 시즌임을 감안하여 분석하세요.
 """
         )
     
@@ -303,6 +307,9 @@ class PlayerAnalysisAI:
 5. **종합 평가**
 
 마크다운 형식으로 작성해주세요.
+
+
+현재 2025년은 진행 중이 시즌임을 감안하여 분석하세요.
 """
             
             response = self.llm.invoke([HumanMessage(content=comparison_prompt)])
