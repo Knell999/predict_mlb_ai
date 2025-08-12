@@ -7,6 +7,7 @@ from streamlit_option_menu import option_menu
 from utils import load_data, load_pitcher_data
 from matplotlib.ticker import MaxNLocator
 from i18n import get_text
+from player_analysis_ai import PlayerAnalysisAI, is_ai_analysis_available, get_ai_analysis_status
 
 path = 'font/H2GTRM.TTF'
 fontprop = fm.FontProperties(fname=path, size=12)
@@ -131,6 +132,62 @@ def run_search(lang="ko"):
                 plt.subplots_adjust(wspace=0.5)  # 열 사이 간격 조정
                 plt.tight_layout()
                 st.pyplot(fig)
+                
+                # AI 분석 기능 추가
+                st.markdown("---")
+                ai_status = get_ai_analysis_status()
+                
+                # 디버깅 정보 (개발 중에만 표시)
+                with st.expander("🔧 AI 기능 상태 (디버깅)", expanded=False):
+                    st.json(ai_status)
+                    import os
+                    api_key = os.getenv("GOOGLE_AI_API_KEY")
+                    st.write(f"환경변수에서 API 키 확인: {'✅ 설정됨' if api_key else '❌ 없음'}")
+                    if api_key:
+                        st.write(f"API 키 길이: {len(api_key)}")
+                
+                if is_ai_analysis_available():
+                    st.subheader("🤖 AI 기반 선수 분석 보고서")
+                    
+                    if st.button(f"{player} AI 분석 보고서 생성", key=f"ai_analysis_{player}"):
+                        with st.spinner("AI가 선수 기록을 분석 중입니다..."):
+                            try:
+                                ai_analyzer = PlayerAnalysisAI()
+                                
+                                # 언어 매핑
+                                lang_mapping = {"ko": "한국어", "en": "영어", "ja": "일본어"}
+                                analysis_lang = lang_mapping.get(lang, "한국어")
+                                
+                                # AI 분석 실행
+                                analysis_report = ai_analyzer.generate_player_analysis(
+                                    player_name=player,
+                                    player_data=player_data,
+                                    league_averages=league_avg,
+                                    player_type=player_type,
+                                    language=analysis_lang
+                                )
+                                
+                                # 분석 결과 표시
+                                st.markdown("### 📊 AI 분석 보고서")
+                                st.markdown(analysis_report)
+                                
+                                # 보고서 다운로드 옵션
+                                st.download_button(
+                                    label="📥 분석 보고서 다운로드",
+                                    data=analysis_report,
+                                    file_name=f"{player}_analysis_report.md",
+                                    mime="text/markdown"
+                                )
+                                
+                            except Exception as e:
+                                st.error(f"AI 분석 중 오류가 발생했습니다: {str(e)}")
+                else:
+                    # AI 기능 사용 불가 시 상태 표시
+                    ai_status = get_ai_analysis_status()
+                    if not ai_status["langchain_available"]:
+                        st.info("💡 AI 분석 기능을 사용하려면 LangChain을 설치하세요: `pip install langchain langchain-google-genai`")
+                    elif not ai_status["api_key_configured"]:
+                        st.info("💡 AI 분석 기능을 사용하려면 환경변수 `GOOGLE_AI_API_KEY`를 설정하세요.")
             else:
                 st.warning(f"해당 선수의 기록을 찾을 수 없습니다.")
 
