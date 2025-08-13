@@ -1,0 +1,46 @@
+services:
+  # 개발용 백엔드 서비스
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mlb-backend-dev
+    ports:
+      - "8001:8000"  # 개발용 포트
+    environment:
+      - PYTHONPATH=/app
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - DEBUG=true
+      - ENVIRONMENT=development
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app:rw  # 개발용 실시간 코드 동기화
+      - ./data:/app/data:ro
+    networks:
+      - mlb-network
+    restart: unless-stopped
+    command: ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  # 개발용 프론트엔드 서비스 (Vite 개발 서버)
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: mlb-frontend-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app:rw
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true  # 파일 변경 감지
+    depends_on:
+      - backend
+    networks:
+      - mlb-network
+    restart: unless-stopped
+
+networks:
+  mlb-network:
+    driver: bridge

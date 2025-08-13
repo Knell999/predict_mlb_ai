@@ -1,0 +1,54 @@
+services:
+  # 백엔드 서비스 (FastAPI)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mlb-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./data:/app/data:ro  # 데이터 파일 읽기 전용으로 마운트
+      - ./logs:/app/logs     # 로그 파일 쓰기 가능으로 마운트
+    networks:
+      - mlb-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/players/summary"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # 프론트엔드 서비스 (React + Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mlb-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - mlb-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  mlb-network:
+    driver: bridge
+
+# 선택사항: 데이터 볼륨 (데이터베이스 추가 시 사용)
+volumes:
+  mlb-data:
