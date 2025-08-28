@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(uv add:*)",
+      "Bash(uv sync:*)",
+      "Bash(cat:*)",
+      "Bash(uv run streamlit run:*)",
+      "Bash(uv run:*)",
+      "Bash(pkill:*)",
+      "Bash(git add:*)",
+      "Bash(ls:*)",
+      "Bash(git commit:*)",
+      "Bash(tree:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(npm install)",
+      "Bash(uvicorn:*)",
+      "Bash(PYTHONPATH=/Users/hyunjong/Desktop/dev/personal/predict_mlb/backend uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8001)",
+      "Bash(chmod:*)",
+      "Bash(curl:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(./docker-build.sh:*)",
+      "Bash(docker-compose build:*)",
+      "Bash(docker-compose:*)",
+      "Bash(docker logs:*)"
+    ],
+    "deny": []
+  }
+}
