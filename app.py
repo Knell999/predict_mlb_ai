@@ -37,18 +37,22 @@ def main():
     # 세션 상태에 언어 설정이 없으면 기본값 설정
     if 'lang' not in st.session_state:
         st.session_state.lang = "ko"
-    
+
+    # 세션 상태에 차트 테마 설정이 없으면 기본값 설정
+    if 'chart_theme' not in st.session_state:
+        st.session_state.chart_theme = "plotly_white"
+
     # 사이드바 설정 및 메뉴 옵션 정의
     with st.sidebar:
         st.title("⚾ " + get_text("app_title", st.session_state.lang))
-        
+
         # 로고 이미지 로드 (utils.py의 함수 사용)
-        logo_image = load_logo_image(MLB_LOGO_PATH) 
+        logo_image = load_logo_image(MLB_LOGO_PATH)
         if logo_image:
             st.image(logo_image, use_container_width=True)
         else:
             st.warning("로고 이미지를 불러올 수 없습니다.")
-        
+
         # 언어 선택 옵션
         languages = get_languages()
         selected_lang = st.selectbox(
@@ -57,11 +61,26 @@ def main():
             format_func=lambda x: languages[x],
             index=list(languages.keys()).index(st.session_state.lang)
         )
-        
+
         # 언어가 변경되면 세션 상태 업데이트
         if selected_lang != st.session_state.lang:
             st.session_state.lang = selected_lang
             st.rerun()  # 언어 변경 시 앱 다시 실행
+
+        # 차트 테마 선택 옵션
+        from utils import get_chart_theme_options
+        theme_options = get_chart_theme_options()
+        selected_theme_label = st.selectbox(
+            "🎨 차트 테마",
+            options=list(theme_options.keys()),
+            index=list(theme_options.values()).index(st.session_state.chart_theme)
+        )
+
+        # 테마가 변경되면 세션 상태 업데이트
+        selected_theme = theme_options[selected_theme_label]
+        if selected_theme != st.session_state.chart_theme:
+            st.session_state.chart_theme = selected_theme
+            st.rerun()
         
         selected = option_menu(
             None,

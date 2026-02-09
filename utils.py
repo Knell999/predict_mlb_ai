@@ -238,3 +238,82 @@ def create_color_palette(n_colors=10):
     """
     import plotly.express as px
     return px.colors.qualitative.Plotly[:n_colors]
+
+# 차트 테마 관련 함수
+def get_chart_theme_options():
+    """
+    사용 가능한 차트 테마 옵션을 반환합니다.
+    """
+    return {
+        "라이트 모드 🌞": "plotly_white",
+        "다크 모드 🌙": "plotly_dark",
+        "색약자 친화 🎨": "colorblind_friendly",
+        "비비드 컬러 🌈": "vivid"
+    }
+
+def get_theme_colors(theme="plotly_white"):
+    """
+    테마에 따른 색상 설정을 반환합니다.
+
+    Args:
+        theme: 테마 이름
+
+    Returns:
+        dict: 색상 설정
+    """
+    if theme == "plotly_dark":
+        return {
+            'plot_bgcolor': '#1e1e1e',
+            'paper_bgcolor': '#1e1e1e',
+            'font_color': 'white',
+            'grid_color': '#444444',
+            'line_colors': ['#636EFA', '#EF553B', '#00CC96', '#AB63FA', '#FFA15A']
+        }
+    elif theme == "colorblind_friendly":
+        return {
+            'plot_bgcolor': 'white',
+            'paper_bgcolor': 'white',
+            'font_color': 'black',
+            'grid_color': 'lightgray',
+            'line_colors': ['#0173B2', '#DE8F05', '#029E73', '#CC78BC', '#ECE133']
+        }
+    elif theme == "vivid":
+        return {
+            'plot_bgcolor': 'white',
+            'paper_bgcolor': 'white',
+            'font_color': 'black',
+            'grid_color': 'lightgray',
+            'line_colors': ['#E74C3C', '#3498DB', '#2ECC71', '#F39C12', '#9B59B6']
+        }
+    else:  # plotly_white (default)
+        return {
+            'plot_bgcolor': 'white',
+            'paper_bgcolor': 'white',
+            'font_color': 'black',
+            'grid_color': 'lightgray',
+            'line_colors': ['#636EFA', '#EF553B', '#00CC96', '#AB63FA', '#FFA15A']
+        }
+
+def apply_theme_to_figure(fig, theme="plotly_white"):
+    """
+    Plotly Figure에 테마를 적용합니다.
+
+    Args:
+        fig: Plotly Figure 객체
+        theme: 테마 이름
+
+    Returns:
+        fig: 테마가 적용된 Figure 객체
+    """
+    colors = get_theme_colors(theme)
+
+    fig.update_layout(
+        plot_bgcolor=colors['plot_bgcolor'],
+        paper_bgcolor=colors['paper_bgcolor'],
+        font=dict(color=colors['font_color'])
+    )
+
+    fig.update_xaxes(gridcolor=colors['grid_color'])
+    fig.update_yaxes(gridcolor=colors['grid_color'])
+
+    return fig
