@@ -14,6 +14,22 @@ fontprop = fm.FontProperties(fname=path, size=12)
 rc('font', family=fontprop.get_name())
 
 
+@st.cache_resource
+def get_prophet_forecast(data, metric, periods=5):
+    """
+    Prophet 모델을 학습하고 예측을 수행합니다.
+    Streamlit 캐싱을 통해 반복 학습을 방지합니다.
+    """
+    df_metric = data[['Season', metric]].copy()
+    df_metric.columns = ['ds', 'y']
+    
+    model = Prophet()
+    model.fit(df_metric)
+    
+    future = model.make_future_dataframe(periods=periods, freq='Y')
+    forecast = model.predict(future)
+    return forecast
+
 def run_predict(lang="ko"):
     """선수별 기록을 입력받아 미래 시즌의 성적을 예측하고 시각화합니다."""
     st.title(get_text('predict_title', lang))
@@ -129,14 +145,13 @@ def run_predict(lang="ko"):
                 for metric, (min_val, max_val) in metrics.items():
                     if metric not in player_data.columns:
                         continue
-
-                    player_metric_data = player_data[['Season', metric]]
+                    
+                    # 시각화를 위해 데이터 준비
+                    player_metric_data = player_data[['Season', metric]].copy()
                     player_metric_data.columns = ['ds', 'y']
-
-                    model = Prophet()
-                    model.fit(player_metric_data)
-                    future = model.make_future_dataframe(periods=5, freq='Y')
-                    forecast = model.predict(future)
+                    
+                    # 캐싱된 함수를 사용하여 예측 수행
+                    forecast = get_prophet_forecast(player_data, metric)
                     
                     # 예측 결과 저장
                     forecasts[metric] = forecast

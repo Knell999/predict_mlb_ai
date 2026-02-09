@@ -46,10 +46,10 @@ class PlayerAnalysisAI:
         
         # Gemini 모델 초기화
         self.llm = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash",
+            model="gemini-2.5-pro",
             google_api_key=self.api_key,
             temperature=0.3,
-            max_tokens=2048
+            max_tokens=20000
         )
         
         # 프롬프트 템플릿 설정
