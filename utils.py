@@ -139,3 +139,102 @@ import seaborn as sns # seaborn 임포트 추가
 def get_player_image_url(player_id):
     """선수의 프로필 이미지 URL을 생성합니다."""
     return f"https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_426,q_auto:best/v1/people/{player_id}/headshot/67/current"
+
+def get_placeholder_image():
+    """
+    선수 이미지 로딩 실패 시 사용할 placeholder 이미지를 반환합니다.
+    간단한 회색 이미지를 numpy 배열로 생성합니다.
+    """
+    import numpy as np
+    from PIL import Image
+
+    # 200x200 회색 이미지 생성
+    placeholder = np.ones((200, 200, 3), dtype=np.uint8) * 200
+
+    # 중앙에 "No Image" 텍스트를 표시하고 싶지만, PIL로 간단하게 처리
+    return Image.fromarray(placeholder)
+
+def display_player_image(player_id, player_name, width=200):
+    """
+    선수 이미지를 표시합니다. 로딩 실패 시 placeholder를 표시합니다.
+
+    Args:
+        player_id: 선수 ID
+        player_name: 선수 이름
+        width: 이미지 너비
+    """
+    try:
+        image_url = get_player_image_url(player_id)
+        st.image(image_url, caption=f"{player_name}", width=width)
+    except Exception as e:
+        placeholder = get_placeholder_image()
+        st.image(placeholder, caption=f"{player_name} (이미지 없음)", width=width)
+
+# Plotly 차트 공통 설정
+def get_plotly_layout_config(title="", xaxis_title="", yaxis_title="", height=500):
+    """
+    Plotly 차트의 공통 레이아웃 설정을 반환합니다.
+
+    Args:
+        title: 차트 제목
+        xaxis_title: X축 제목
+        yaxis_title: Y축 제목
+        height: 차트 높이
+
+    Returns:
+        dict: Plotly layout 설정
+    """
+    return {
+        'title': {
+            'text': title,
+            'font': {'size': 18, 'family': 'Arial, sans-serif'},
+            'x': 0.5,
+            'xanchor': 'center'
+        },
+        'xaxis': {
+            'title': xaxis_title,
+            'showgrid': True,
+            'gridcolor': 'lightgray'
+        },
+        'yaxis': {
+            'title': yaxis_title,
+            'showgrid': True,
+            'gridcolor': 'lightgray'
+        },
+        'height': height,
+        'hovermode': 'closest',
+        'plot_bgcolor': 'white',
+        'paper_bgcolor': 'white',
+        'font': {'family': 'Arial, sans-serif'}
+    }
+
+def get_plotly_config():
+    """
+    Plotly 차트의 상호작용 설정을 반환합니다.
+    다운로드, 확대/축소 등의 기능을 포함합니다.
+    """
+    return {
+        'displayModeBar': True,
+        'displaylogo': False,
+        'modeBarButtonsToAdd': ['downloadSvg'],
+        'toImageButtonOptions': {
+            'format': 'png',
+            'filename': 'mlb_chart',
+            'height': 800,
+            'width': 1200,
+            'scale': 2
+        }
+    }
+
+def create_color_palette(n_colors=10):
+    """
+    시각화를 위한 색상 팔레트를 생성합니다.
+
+    Args:
+        n_colors: 생성할 색상 수
+
+    Returns:
+        list: 색상 코드 리스트
+    """
+    import plotly.express as px
+    return px.colors.qualitative.Plotly[:n_colors]
