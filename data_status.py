@@ -12,10 +12,10 @@ import os
 from config import BATTER_STATS_FILE, PITCHER_STATS_FILE
 from i18n import get_text
 
-def show_data_status():
+def show_data_status(lang="ko"):
     """데이터 상태 대시보드"""
     
-    st.title("📊 " + get_text("data_status_title", "데이터 상태 모니터링"))
+    st.title("📊 " + get_text("data_status_title", lang))
     
     # 데이터 파일 존재 여부 확인
     batter_exists = os.path.exists(BATTER_STATS_FILE)

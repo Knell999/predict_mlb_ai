@@ -58,6 +58,10 @@ KO = {
     "moving_average": "이동평균 설명",
     "select_metric_warning": "분석할 지표를 하나 이상 선택해주세요.",
     
+    # 데이터 상태 페이지
+    "data_status": "데이터 상태",
+    "data_status_title": "데이터 상태 모니터링",
+    
     # 기타
     "loading": "로딩 중...",
     "error": "오류가 발생했습니다",
@@ -123,6 +127,10 @@ EN = {
     "moving_average": "Moving Average Explanation",
     "select_metric_warning": "Please select at least one metric to analyze.",
     
+    # Data Status Page
+    "data_status": "Data Status",
+    "data_status_title": "Data Status Monitoring",
+    
     # Other
     "loading": "Loading...",
     "error": "An error occurred",
@@ -187,6 +195,10 @@ JA = {
     "trend_overview": "リーグ平均指標の変化傾向",
     "moving_average": "移動平均の説明",
     "select_metric_warning": "分析するには少なくとも1つの指標を選択してください。",
+    
+    # データ状態ページ
+    "data_status": "データ状態",
+    "data_status_title": "データ状態モニタリング",
     
     # その他
     "loading": "読み込み中...",

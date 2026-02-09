@@ -86,7 +86,7 @@ class DataQualityChecker:
                                   if col not in batter_df.columns],
                 'extra_columns': [col for col in batter_df.columns 
                                 if col not in self.expected_batter_columns],
-                'season_range': (batter_df['Season'].min(), batter_df['Season'].max()),
+                'season_range': [int(batter_df['Season'].min()), int(batter_df['Season'].max())],
                 'null_counts': batter_df.isnull().sum().to_dict()
             }
             
@@ -99,7 +99,7 @@ class DataQualityChecker:
                                   if col not in pitcher_df.columns],
                 'extra_columns': [col for col in pitcher_df.columns 
                                 if col not in self.expected_pitcher_columns],
-                'season_range': (pitcher_df['Season'].min(), pitcher_df['Season'].max()),
+                'season_range': [int(pitcher_df['Season'].min()), int(pitcher_df['Season'].max())],
                 'null_counts': pitcher_df.isnull().sum().to_dict()
             }
             
@@ -189,7 +189,8 @@ class DataQualityChecker:
                 'HomeRuns': ['mean', 'max'],
                 'RBIs': ['mean', 'max']
             }).round(3)
-            
+            # MultiIndex 컬럼을 평탄화하여 JSON 호환성 확보
+            batter_season_stats.columns = ['_'.join(col).strip() for col in batter_season_stats.columns.values]
             result['batter_by_season'] = batter_season_stats.to_dict()
             
             # 투수 데이터 시즌별 통계
@@ -200,7 +201,8 @@ class DataQualityChecker:
                 'Wins': ['mean', 'max'],
                 'StrikeOuts': ['mean', 'max']
             }).round(3)
-            
+            # MultiIndex 컬럼을 평탄화하여 JSON 호환성 확보
+            pitcher_season_stats.columns = ['_'.join(col).strip() for col in pitcher_season_stats.columns.values]
             result['pitcher_by_season'] = pitcher_season_stats.to_dict()
             
             # 최신 시즌 하이라이트

@@ -90,7 +90,7 @@ def main():
                 get_text("search_records", st.session_state.lang), 
                 get_text("compare_players", st.session_state.lang),
                 get_text("predict_records", st.session_state.lang),
-                "📊 데이터 상태"
+                "📊 " + get_text("data_status", st.session_state.lang)
             ],
             icons=["house", "activity", "search", "people", "magic", "database"],
             menu_icon="cast",
@@ -124,8 +124,8 @@ def main():
         run_trend(lang)
     elif selected == compare_text:
         run_compare(lang)
-    elif selected == "📊 데이터 상태":
-        show_data_status()
+    elif selected == "📊 " + get_text("data_status", lang):
+        show_data_status(lang)
 
     # 성능 모니터링 - 사이드바 하단에 표시
     with st.sidebar.expander("📊 앱 성능 메트릭"):
