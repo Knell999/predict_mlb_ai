@@ -24,7 +24,26 @@ KO = {
     "career_summary": "커리어 통산 비교",
     "season_by_season": "시즌별 스탯 비교",
     "no_data_available": "표시할 데이터가 없습니다.",
-    
+    "comparison_mode": "비교 모드",
+    "two_player_compare": "2명 비교",
+    "multi_player_compare": "다중 선수 비교 (최대 5명)",
+    "select_players_multi": "비교할 선수 선택 (2-5명)",
+    "min_two_players_warning": "비교를 위해 최소 2명의 선수를 선택해주세요.",
+    "insufficient_data_warning": "선택한 선수들의 데이터가 부족합니다.",
+    "player_profile": "선수 프로필",
+    "career_seasons": "통산 시즌",
+    "tab_stat_compare": "통계 비교",
+    "tab_radar_chart": "레이더 차트",
+    "tab_season_trend": "시즌별 추이",
+    "tab_detail_data": "상세 데이터",
+    "stat_compare_avg": "통계 비교 (평균)",
+    "radar_chart_title": "능력치 레이더 차트",
+    "radar_chart_info": "각 지표는 선수의 커리어 평균값으로 표시됩니다.",
+    "season_trend_compare": "시즌별 추이 비교",
+    "select_trend_metric": "추이를 볼 지표 선택",
+    "detail_records": "상세 기록",
+    "chart_usage_tip": "차트 위에 마우스를 올리면 확대/축소, 다운로드 등의 기능을 사용할 수 있습니다.",
+
     # 홈 페이지
     "welcome_message": "야구 팬 여러분, 안녕하세요! 👋",
     "app_intro": "MLB 선수 기록 조회 및 예측 서비스에 오신 것을 환영합니다. 🎉",
@@ -34,7 +53,16 @@ KO = {
     "prediction_feature": "🔮 성과 예측",
     "visualization_feature": "📈 데이터 시각화",
     "learn_more": "🤔 더 알아보기",
-    
+    "search_feature_desc_1": "최신 MLB 선수 기록을 실시간으로 검색하고 조회할 수 있습니다.",
+    "search_feature_desc_2": "타자와 투수의 다양한 지표를 상세하게 확인할 수 있습니다.",
+    "search_feature_desc_3": "원하는 조건에 맞게 검색 결과를 필터링하고 정렬할 수 있습니다.",
+    "prediction_feature_desc_1": "최신 머신 러닝 알고리즘을 활용하여 타자와 투수의 다양한 기록을 예측합니다.",
+    "prediction_feature_desc_2": "사용자가 선택한 조건에 따라 맞춤형 예측을 제공합니다.",
+    "prediction_feature_desc_3": "선수들의 최근 경기 흐름을 분석하여 향후 성과를 예측합니다.",
+    "visualization_feature_desc_1": "데이터를 시각화하여 이해하기 쉽게 제공합니다.",
+    "visualization_feature_desc_2": "리그 평균 지표 변화 추이를 시각화합니다.",
+    "visualization_feature_desc_3": "대시보드를 커스터마이징하여 필요한 정보만을 빠르게 조회할 수 있습니다.",
+
     # 검색 페이지
     "search_title": "MLB 선수 기록 조회👁️",
     "select_player": "선수를 선택하세요:",
@@ -43,25 +71,114 @@ KO = {
     "visualization_title": "선수 기록 시각화",
     "compare_with_league": "선수와 리그 평균 비교 (히스토그램)",
     "no_record": "해당 선수의 기록을 찾을 수 없습니다.",
-    
+    "league_average": "리그 평균",
+    "season": "시즌",
+    "loading_player_data": "선수 데이터를 불러오는 중...",
+    "interactive_visualization": "선수 기록 인터랙티브 시각화",
+    "career_total_seasons": "통산 시즌",
+    "player_id_not_found": "선수 ID를 찾을 수 없습니다.",
+
     # 예측 페이지
     "predict_title": "MLB 선수 기록 예측",
     "player_option": "선수 및 옵션 선택",
     "prediction_tab": "기록 예측",
     "prediction_result": "예측 결과",
     "prediction_warning": "의 최근 2개년(2022, 2023) 시즌 데이터가 없어 예측이 불가능합니다.",
-    
+    "search_player_name": "선수 이름 검색",
+    "avg_ops": "평균 OPS",
+    "avg_era": "평균 ERA",
+    "data_insufficient_warning": "의 데이터가 부족합니다. 예측을 위해서는 최소 3시즌 이상의 데이터가 필요합니다.",
+    "select_predict_metrics": "예측할 지표를 선택하세요",
+    "select_predict_metrics_prompt": "예측할 지표를 하나 이상 선택해주세요.",
+    "prediction_period": "예측 기간 (년)",
+    "start_prediction": "예측 시작",
+    "predicting_metric": "예측 중...",
+    "prediction_stats": "예측 통계",
+    "avg_prediction_value": "평균 예측값",
+    "prediction_trend": "예측 트렌드",
+    "trend_up": "상승",
+    "trend_down": "하락",
+    "detail_prediction_data": "상세 예측 데이터 보기",
+    "all_predictions_complete": "모든 예측이 완료되었습니다!",
+    "prediction_error": "예측 모델 실행 중 오류가 발생했습니다",
+
     # 트렌드 페이지
     "trend_title": "MLB 리그 트렌드 분석",
     "select_metrics": "분석할 지표 선택",
     "trend_overview": "리그 평균 지표 변화 추이",
     "moving_average": "이동평균 설명",
     "select_metric_warning": "분석할 지표를 하나 이상 선택해주세요.",
-    
+    "batter_trend": "타자 트렌드 분석",
+    "pitcher_trend": "투수 트렌드 분석",
+    "analysis_mode": "분석 모드 선택",
+    "single_metric_animation": "단일 지표 애니메이션",
+    "multi_metric_compare": "다중 지표 비교",
+    "moving_average_compare": "이동평균 비교",
+    "select_analysis_metric": "분석할 지표 선택",
+    "select_compare_metrics": "비교할 지표 선택 (최대 6개)",
+    "normalized_info": "정규화된 값(0-1)으로 표시되어 서로 다른 단위의 지표를 비교할 수 있습니다.",
+    "moving_average_info": "이동평균은 단기 변동을 제거하고 장기 트렌드를 파악하는 데 유용합니다.",
+    "play_animation_info": "재생 버튼을 눌러 시즌별 변화를 애니메이션으로 확인하세요!",
+    "select_one_metric_warning": "비교할 지표를 하나 이상 선택해주세요.",
+
     # 데이터 상태 페이지
     "data_status": "데이터 상태",
     "data_status_title": "데이터 상태 모니터링",
-    
+    "batter_data_exists": "타자 데이터 파일 존재",
+    "pitcher_data_exists": "투수 데이터 파일 존재",
+    "batter_data_missing": "타자 데이터 파일 없음",
+    "pitcher_data_missing": "투수 데이터 파일 없음",
+    "data_files_missing": "데이터 파일이 없습니다. 데이터 업데이트를 실행해주세요.",
+    "data_loading_failed": "데이터 로딩 실패",
+    "data_overview": "데이터 개요",
+    "batter_records": "타자 레코드",
+    "pitcher_records": "투수 레코드",
+    "batter_data_period": "타자 데이터 기간",
+    "pitcher_data_period": "투수 데이터 기간",
+    "season_distribution": "시즌별 데이터 분포",
+    "season_player_count": "시즌별 선수 데이터 수",
+    "player_count": "선수 수",
+    "latest_season_highlight": "최신 시즌 하이라이트",
+    "batter_highlight": "타자 하이라이트",
+    "pitcher_highlight": "투수 하이라이트",
+    "top_avg": "최고 타율",
+    "top_hr": "최다 홈런",
+    "top_rbi": "최다 타점",
+    "best_era": "최고 평균자책점",
+    "top_wins": "최다 승수",
+    "top_strikeouts": "최다 탈삼진",
+    "data_quality_check": "데이터 품질 체크",
+    "batter_data": "타자 데이터",
+    "pitcher_data": "투수 데이터",
+    "null_count_found": "결측치 발견",
+    "no_null_values": "결측치 없음",
+    "duplicate_records_found": "중복 레코드 발견",
+    "no_duplicate_records": "중복 레코드 없음",
+    "update_guide": "데이터 업데이트 가이드",
+    "update_guide_desc": "최신 MLB 데이터를 업데이트하려면 다음 명령어를 사용하세요:",
+    "auto_scheduler": "자동 업데이트 스케줄러",
+    "file_info": "파일 정보",
+    "file_size": "크기",
+    "last_modified": "최종 수정",
+
+    # 메트릭 이름
+    "metric_BattingAverage": "타율",
+    "metric_OnBasePercentage": "출루율",
+    "metric_SluggingPercentage": "장타율",
+    "metric_OPS": "OPS",
+    "metric_Hits": "안타",
+    "metric_RBIs": "타점",
+    "metric_HomeRuns": "홈런",
+    "metric_StolenBases": "도루",
+    "metric_Walks": "볼넷",
+    "metric_StrikeOuts": "삼진",
+    "metric_EarnedRunAverage": "평균자책점",
+    "metric_Whip": "WHIP",
+    "metric_Wins": "승수",
+    "metric_Losses": "패수",
+    "metric_InningsPitched": "이닝",
+    "metric_HitsAllowed": "피안타",
+
     # 기타
     "loading": "로딩 중...",
     "error": "오류가 발생했습니다",
@@ -69,6 +186,12 @@ KO = {
     "player": "선수",
     "team": "팀",
     "stats": "기록",
+    "logo_load_error": "로고 이미지를 불러올 수 없습니다.",
+    "app_metrics_title": "앱 성능 메트릭",
+    "total_page_views": "총 페이지뷰",
+    "avg_response_time": "평균 응답시간",
+    "error_count": "에러 수",
+    "generating_chart": "차트 생성 중...",
 }
 
 # 영어 텍스트 사전
@@ -93,7 +216,26 @@ EN = {
     "career_summary": "Career Summary Comparison",
     "season_by_season": "Season-by-Season Stat Comparison",
     "no_data_available": "No data available to display.",
-    
+    "comparison_mode": "Comparison Mode",
+    "two_player_compare": "Compare 2 Players",
+    "multi_player_compare": "Multi-Player Compare (up to 5)",
+    "select_players_multi": "Select Players to Compare (2-5)",
+    "min_two_players_warning": "Please select at least 2 players to compare.",
+    "insufficient_data_warning": "Insufficient data for selected players.",
+    "player_profile": "Player Profile",
+    "career_seasons": "Career Seasons",
+    "tab_stat_compare": "Stat Compare",
+    "tab_radar_chart": "Radar Chart",
+    "tab_season_trend": "Season Trend",
+    "tab_detail_data": "Detail Data",
+    "stat_compare_avg": "Stat Comparison (Average)",
+    "radar_chart_title": "Ability Radar Chart",
+    "radar_chart_info": "Each metric is displayed as the player's career average.",
+    "season_trend_compare": "Season Trend Comparison",
+    "select_trend_metric": "Select metric for trend",
+    "detail_records": "Detail Records",
+    "chart_usage_tip": "Hover over charts for zoom, download, and other features.",
+
     # Home page
     "welcome_message": "Hello, baseball fans! 👋",
     "app_intro": "Welcome to the MLB Player Stats Search and Prediction Service! 🎉",
@@ -103,7 +245,16 @@ EN = {
     "prediction_feature": "🔮 Performance Prediction",
     "visualization_feature": "📈 Data Visualization",
     "learn_more": "🤔 Learn More",
-    
+    "search_feature_desc_1": "Search and browse the latest MLB player records in real-time.",
+    "search_feature_desc_2": "View detailed metrics for both batters and pitchers.",
+    "search_feature_desc_3": "Filter and sort search results based on your criteria.",
+    "prediction_feature_desc_1": "Predict various records for batters and pitchers using machine learning algorithms.",
+    "prediction_feature_desc_2": "Get customized predictions based on your selected conditions.",
+    "prediction_feature_desc_3": "Analyze recent performance trends to predict future performance.",
+    "visualization_feature_desc_1": "Visualize data in easy-to-understand charts and graphs.",
+    "visualization_feature_desc_2": "Visualize league average metric trends over time.",
+    "visualization_feature_desc_3": "Customize your dashboard to quickly access the information you need.",
+
     # Search page
     "search_title": "MLB Player Records Search👁️",
     "select_player": "Select a player:",
@@ -112,25 +263,114 @@ EN = {
     "visualization_title": "Player Records Visualization",
     "compare_with_league": "Player vs League Average (Histogram)",
     "no_record": "No records found for this player.",
-    
+    "league_average": "League Average",
+    "season": "Season",
+    "loading_player_data": "Loading player data...",
+    "interactive_visualization": "Interactive Player Records Visualization",
+    "career_total_seasons": "Career Seasons",
+    "player_id_not_found": "Player ID not found.",
+
     # Predict page
     "predict_title": "MLB Player Records Prediction",
     "player_option": "Select Player and Options",
     "prediction_tab": "Records Prediction",
     "prediction_result": "Prediction Results",
     "prediction_warning": " does not have recent data (2022, 2023) required for prediction.",
-    
+    "search_player_name": "Search player name",
+    "avg_ops": "Avg OPS",
+    "avg_era": "Avg ERA",
+    "data_insufficient_warning": " has insufficient data. At least 3 seasons of data are required for prediction.",
+    "select_predict_metrics": "Select metrics to predict",
+    "select_predict_metrics_prompt": "Please select at least one metric to predict.",
+    "prediction_period": "Prediction Period (years)",
+    "start_prediction": "Start Prediction",
+    "predicting_metric": "Predicting...",
+    "prediction_stats": "Prediction Statistics",
+    "avg_prediction_value": "Avg Prediction Value",
+    "prediction_trend": "Prediction Trend",
+    "trend_up": "Up",
+    "trend_down": "Down",
+    "detail_prediction_data": "View Detailed Prediction Data",
+    "all_predictions_complete": "All predictions completed!",
+    "prediction_error": "An error occurred while running the prediction model",
+
     # Trend page
     "trend_title": "MLB League Trend Analysis",
     "select_metrics": "Select metrics to analyze",
     "trend_overview": "League Average Metrics Trend",
     "moving_average": "Moving Average Explanation",
     "select_metric_warning": "Please select at least one metric to analyze.",
-    
+    "batter_trend": "Batter Trend Analysis",
+    "pitcher_trend": "Pitcher Trend Analysis",
+    "analysis_mode": "Select Analysis Mode",
+    "single_metric_animation": "Single Metric Animation",
+    "multi_metric_compare": "Multi-Metric Compare",
+    "moving_average_compare": "Moving Average Compare",
+    "select_analysis_metric": "Select metric to analyze",
+    "select_compare_metrics": "Select metrics to compare (max 6)",
+    "normalized_info": "Displayed as normalized values (0-1) to compare metrics with different units.",
+    "moving_average_info": "Moving averages help identify long-term trends by removing short-term fluctuations.",
+    "play_animation_info": "Press play to see season-by-season changes animated!",
+    "select_one_metric_warning": "Please select at least one metric to compare.",
+
     # Data Status Page
     "data_status": "Data Status",
     "data_status_title": "Data Status Monitoring",
-    
+    "batter_data_exists": "Batter data file exists",
+    "pitcher_data_exists": "Pitcher data file exists",
+    "batter_data_missing": "Batter data file missing",
+    "pitcher_data_missing": "Pitcher data file missing",
+    "data_files_missing": "Data files not found. Please run data update.",
+    "data_loading_failed": "Data loading failed",
+    "data_overview": "Data Overview",
+    "batter_records": "Batter Records",
+    "pitcher_records": "Pitcher Records",
+    "batter_data_period": "Batter Data Period",
+    "pitcher_data_period": "Pitcher Data Period",
+    "season_distribution": "Season Data Distribution",
+    "season_player_count": "Player Data Count by Season",
+    "player_count": "Player Count",
+    "latest_season_highlight": "Latest Season Highlights",
+    "batter_highlight": "Batter Highlights",
+    "pitcher_highlight": "Pitcher Highlights",
+    "top_avg": "Top Batting Average",
+    "top_hr": "Most Home Runs",
+    "top_rbi": "Most RBIs",
+    "best_era": "Best ERA",
+    "top_wins": "Most Wins",
+    "top_strikeouts": "Most Strikeouts",
+    "data_quality_check": "Data Quality Check",
+    "batter_data": "Batter Data",
+    "pitcher_data": "Pitcher Data",
+    "null_count_found": "null values found",
+    "no_null_values": "No null values",
+    "duplicate_records_found": "duplicate records found",
+    "no_duplicate_records": "No duplicate records",
+    "update_guide": "Data Update Guide",
+    "update_guide_desc": "Use the following commands to update MLB data:",
+    "auto_scheduler": "Auto Update Scheduler",
+    "file_info": "File Information",
+    "file_size": "Size",
+    "last_modified": "Last Modified",
+
+    # Metric names
+    "metric_BattingAverage": "Batting Average",
+    "metric_OnBasePercentage": "On-Base Percentage",
+    "metric_SluggingPercentage": "Slugging Percentage",
+    "metric_OPS": "OPS",
+    "metric_Hits": "Hits",
+    "metric_RBIs": "RBIs",
+    "metric_HomeRuns": "Home Runs",
+    "metric_StolenBases": "Stolen Bases",
+    "metric_Walks": "Walks",
+    "metric_StrikeOuts": "Strikeouts",
+    "metric_EarnedRunAverage": "ERA",
+    "metric_Whip": "WHIP",
+    "metric_Wins": "Wins",
+    "metric_Losses": "Losses",
+    "metric_InningsPitched": "Innings Pitched",
+    "metric_HitsAllowed": "Hits Allowed",
+
     # Other
     "loading": "Loading...",
     "error": "An error occurred",
@@ -138,6 +378,12 @@ EN = {
     "player": "Player",
     "team": "Team",
     "stats": "Stats",
+    "logo_load_error": "Unable to load logo image.",
+    "app_metrics_title": "App Performance Metrics",
+    "total_page_views": "Total Page Views",
+    "avg_response_time": "Avg Response Time",
+    "error_count": "Error Count",
+    "generating_chart": "Generating chart...",
 }
 
 # 일본어 텍스트 사전
@@ -162,7 +408,26 @@ JA = {
     "career_summary": "キャリア通算比較",
     "season_by_season": "シーズン別ステータス比較",
     "no_data_available": "表示するデータがありません。",
-    
+    "comparison_mode": "比較モード",
+    "two_player_compare": "2人比較",
+    "multi_player_compare": "複数選手比較（最大5人）",
+    "select_players_multi": "比較する選手を選択（2-5人）",
+    "min_two_players_warning": "比較するには最低2人の選手を選択してください。",
+    "insufficient_data_warning": "選択した選手のデータが不足しています。",
+    "player_profile": "選手プロフィール",
+    "career_seasons": "通算シーズン",
+    "tab_stat_compare": "統計比較",
+    "tab_radar_chart": "レーダーチャート",
+    "tab_season_trend": "シーズン推移",
+    "tab_detail_data": "詳細データ",
+    "stat_compare_avg": "統計比較（平均）",
+    "radar_chart_title": "能力レーダーチャート",
+    "radar_chart_info": "各指標は選手のキャリア平均値で表示されます。",
+    "season_trend_compare": "シーズン推移比較",
+    "select_trend_metric": "推移を見る指標を選択",
+    "detail_records": "詳細記録",
+    "chart_usage_tip": "チャート上にマウスを置くとズーム、ダウンロードなどの機能が使えます。",
+
     # ホームページ
     "welcome_message": "こんにちは、野球ファンの皆さん！ 👋",
     "app_intro": "MLB選手記録検索・予測サービスへようこそ！ 🎉",
@@ -172,7 +437,16 @@ JA = {
     "prediction_feature": "🔮 パフォーマンス予測",
     "visualization_feature": "📈 データ可視化",
     "learn_more": "🤔 詳細を見る",
-    
+    "search_feature_desc_1": "最新のMLB選手記録をリアルタイムで検索・閲覧できます。",
+    "search_feature_desc_2": "打者と投手の様々な指標を詳しく確認できます。",
+    "search_feature_desc_3": "条件に合わせて検索結果をフィルタリング・ソートできます。",
+    "prediction_feature_desc_1": "機械学習アルゴリズムを活用して打者と投手の様々な記録を予測します。",
+    "prediction_feature_desc_2": "選択した条件に基づいたカスタマイズ予測を提供します。",
+    "prediction_feature_desc_3": "選手の最近の試合の流れを分析して今後のパフォーマンスを予測します。",
+    "visualization_feature_desc_1": "データを視覚化して分かりやすく提供します。",
+    "visualization_feature_desc_2": "リーグ平均指標の変化傾向を可視化します。",
+    "visualization_feature_desc_3": "ダッシュボードをカスタマイズして必要な情報だけを素早く確認できます。",
+
     # 検索ページ
     "search_title": "MLB選手記録検索👁️",
     "select_player": "選手を選択してください:",
@@ -181,25 +455,114 @@ JA = {
     "visualization_title": "選手記録の可視化",
     "compare_with_league": "選手とリーグ平均の比較（ヒストグラム）",
     "no_record": "この選手の記録が見つかりません。",
-    
+    "league_average": "リーグ平均",
+    "season": "シーズン",
+    "loading_player_data": "選手データを読み込み中...",
+    "interactive_visualization": "選手記録インタラクティブ可視化",
+    "career_total_seasons": "通算シーズン",
+    "player_id_not_found": "選手IDが見つかりません。",
+
     # 予測ページ
     "predict_title": "MLB選手記録予測",
     "player_option": "選手とオプションの選択",
     "prediction_tab": "記録予測",
     "prediction_result": "予測結果",
     "prediction_warning": "は予測に必要な最近のデータ（2022年、2023年）がありません。",
-    
+    "search_player_name": "選手名を検索",
+    "avg_ops": "平均OPS",
+    "avg_era": "平均ERA",
+    "data_insufficient_warning": "のデータが不足しています。予測には最低3シーズン以上のデータが必要です。",
+    "select_predict_metrics": "予測する指標を選択",
+    "select_predict_metrics_prompt": "予測する指標を1つ以上選択してください。",
+    "prediction_period": "予測期間（年）",
+    "start_prediction": "予測開始",
+    "predicting_metric": "予測中...",
+    "prediction_stats": "予測統計",
+    "avg_prediction_value": "平均予測値",
+    "prediction_trend": "予測トレンド",
+    "trend_up": "上昇",
+    "trend_down": "下降",
+    "detail_prediction_data": "詳細予測データを表示",
+    "all_predictions_complete": "すべての予測が完了しました！",
+    "prediction_error": "予測モデルの実行中にエラーが発生しました",
+
     # トレンドページ
     "trend_title": "MLBリーグトレンド分析",
     "select_metrics": "分析する指標を選択",
     "trend_overview": "リーグ平均指標の変化傾向",
     "moving_average": "移動平均の説明",
     "select_metric_warning": "分析するには少なくとも1つの指標を選択してください。",
-    
+    "batter_trend": "打者トレンド分析",
+    "pitcher_trend": "投手トレンド分析",
+    "analysis_mode": "分析モードを選択",
+    "single_metric_animation": "単一指標アニメーション",
+    "multi_metric_compare": "複数指標比較",
+    "moving_average_compare": "移動平均比較",
+    "select_analysis_metric": "分析する指標を選択",
+    "select_compare_metrics": "比較する指標を選択（最大6つ）",
+    "normalized_info": "正規化された値（0-1）で表示され、異なる単位の指標を比較できます。",
+    "moving_average_info": "移動平均は短期変動を除去し、長期トレンドを把握するのに有用です。",
+    "play_animation_info": "再生ボタンを押してシーズンごとの変化をアニメーションで確認してください！",
+    "select_one_metric_warning": "比較する指標を1つ以上選択してください。",
+
     # データ状態ページ
     "data_status": "データ状態",
     "data_status_title": "データ状態モニタリング",
-    
+    "batter_data_exists": "打者データファイル存在",
+    "pitcher_data_exists": "投手データファイル存在",
+    "batter_data_missing": "打者データファイルなし",
+    "pitcher_data_missing": "投手データファイルなし",
+    "data_files_missing": "データファイルがありません。データ更新を実行してください。",
+    "data_loading_failed": "データ読み込み失敗",
+    "data_overview": "データ概要",
+    "batter_records": "打者レコード",
+    "pitcher_records": "投手レコード",
+    "batter_data_period": "打者データ期間",
+    "pitcher_data_period": "投手データ期間",
+    "season_distribution": "シーズン別データ分布",
+    "season_player_count": "シーズン別選手データ数",
+    "player_count": "選手数",
+    "latest_season_highlight": "最新シーズンハイライト",
+    "batter_highlight": "打者ハイライト",
+    "pitcher_highlight": "投手ハイライト",
+    "top_avg": "最高打率",
+    "top_hr": "最多ホームラン",
+    "top_rbi": "最多打点",
+    "best_era": "最高防御率",
+    "top_wins": "最多勝",
+    "top_strikeouts": "最多奪三振",
+    "data_quality_check": "データ品質チェック",
+    "batter_data": "打者データ",
+    "pitcher_data": "投手データ",
+    "null_count_found": "欠損値が見つかりました",
+    "no_null_values": "欠損値なし",
+    "duplicate_records_found": "重複レコードが見つかりました",
+    "no_duplicate_records": "重複レコードなし",
+    "update_guide": "データ更新ガイド",
+    "update_guide_desc": "最新のMLBデータを更新するには以下のコマンドを使用してください：",
+    "auto_scheduler": "自動更新スケジューラー",
+    "file_info": "ファイル情報",
+    "file_size": "サイズ",
+    "last_modified": "最終更新",
+
+    # メトリック名
+    "metric_BattingAverage": "打率",
+    "metric_OnBasePercentage": "出塁率",
+    "metric_SluggingPercentage": "長打率",
+    "metric_OPS": "OPS",
+    "metric_Hits": "安打",
+    "metric_RBIs": "打点",
+    "metric_HomeRuns": "本塁打",
+    "metric_StolenBases": "盗塁",
+    "metric_Walks": "四球",
+    "metric_StrikeOuts": "三振",
+    "metric_EarnedRunAverage": "防御率",
+    "metric_Whip": "WHIP",
+    "metric_Wins": "勝利",
+    "metric_Losses": "敗北",
+    "metric_InningsPitched": "投球回",
+    "metric_HitsAllowed": "被安打",
+
     # その他
     "loading": "読み込み中...",
     "error": "エラーが発生しました",
@@ -207,6 +570,12 @@ JA = {
     "player": "選手",
     "team": "チーム",
     "stats": "成績",
+    "logo_load_error": "ロゴ画像を読み込めません。",
+    "app_metrics_title": "アプリパフォーマンスメトリクス",
+    "total_page_views": "総ページビュー",
+    "avg_response_time": "平均応答時間",
+    "error_count": "エラー数",
+    "generating_chart": "チャート生成中...",
 }
 
 # 사용 가능한 모든 언어
@@ -219,24 +588,32 @@ LANGUAGES = {
 def get_text(key, lang="ko"):
     """
     지정한 언어와 키로 텍스트를 가져옵니다.
-    
+
     Args:
         key: 텍스트 키
         lang: 언어 코드 (기본값: 'ko')
-    
+
     Returns:
         str: 해당 언어의 텍스트, 없으면 키 그대로 반환
     """
     if lang not in LANGUAGES:
         lang = "ko"  # 기본 언어
-    
+
     return LANGUAGES[lang]["data"].get(key, key)
 
 def get_languages():
     """
     사용 가능한 모든 언어를 반환합니다.
-    
+
     Returns:
         dict: 언어 코드와 이름의 사전
     """
     return {code: info["name"] for code, info in LANGUAGES.items()}
+
+def get_metric_name(metric_key, lang="ko"):
+    """메트릭의 다국어 이름을 반환합니다."""
+    return get_text(f"metric_{metric_key}", lang)
+
+def get_metric_names_dict(metric_keys, lang="ko"):
+    """메트릭 키 리스트에 대한 {key: 이름} 딕셔너리를 반환합니다."""
+    return {key: get_metric_name(key, lang) for key in metric_keys}
