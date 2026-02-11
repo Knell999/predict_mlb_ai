@@ -8,6 +8,7 @@ import pandas as pd
 import streamlit as st
 from typing import Dict, List, Optional, Any
 import logging
+from config import AI_MODEL_NAME, AI_TEMPERATURE, AI_MAX_TOKENS
 
 # .env 파일 로드
 try:
@@ -46,10 +47,10 @@ class PlayerAnalysisAI:
         
         # Gemini 모델 초기화
         self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-pro",
+            model=AI_MODEL_NAME,
             google_api_key=self.api_key,
-            temperature=0.3,
-            max_tokens=20000
+            temperature=AI_TEMPERATURE,
+            max_tokens=AI_MAX_TOKENS
         )
         
         # 프롬프트 템플릿 설정
@@ -150,33 +151,44 @@ class PlayerAnalysisAI:
 """
         )
     
+    @staticmethod
+    def _safe_format(value, fmt=".3f"):
+        """NaN/None 안전 포매팅."""
+        try:
+            if pd.isna(value):
+                return "N/A"
+            return f"{value:{fmt}}"
+        except (ValueError, TypeError):
+            return str(value)
+
     def _prepare_player_data_summary(self, player_data: pd.DataFrame, player_type: str) -> str:
         """선수 데이터를 AI 분석용 텍스트로 변환"""
         if player_data.empty:
             return "데이터가 없습니다."
-        
+
         summary_lines = []
-        
+        sf = self._safe_format
+
         for _, row in player_data.iterrows():
             if player_type == "타자":
                 line = f"시즌 {row['Season']}: "
-                line += f"타율 {row.get('BattingAverage', 'N/A'):.3f}, "
-                line += f"홈런 {row.get('HomeRuns', 'N/A')}개, "
-                line += f"타점 {row.get('RBIs', 'N/A')}개, "
-                line += f"OPS {row.get('OPS', 'N/A'):.3f}, "
-                line += f"출루율 {row.get('OnBasePercentage', 'N/A'):.3f}, "
-                line += f"장타율 {row.get('SluggingPercentage', 'N/A'):.3f}"
+                line += f"타율 {sf(row.get('BattingAverage'), '.3f')}, "
+                line += f"홈런 {sf(row.get('HomeRuns'), '.0f')}개, "
+                line += f"타점 {sf(row.get('RBIs'), '.0f')}개, "
+                line += f"OPS {sf(row.get('OPS'), '.3f')}, "
+                line += f"출루율 {sf(row.get('OnBasePercentage'), '.3f')}, "
+                line += f"장타율 {sf(row.get('SluggingPercentage'), '.3f')}"
             else:  # 투수
                 line = f"시즌 {row['Season']}: "
-                line += f"ERA {row.get('EarnedRunAverage', 'N/A'):.2f}, "
-                line += f"승수 {row.get('Wins', 'N/A')}승, "
-                line += f"패수 {row.get('Losses', 'N/A')}패, "
-                line += f"WHIP {row.get('Whip', 'N/A'):.2f}, "
-                line += f"탈삼진 {row.get('StrikeOuts', 'N/A')}개, "
-                line += f"이닝 {row.get('InningsPitched', 'N/A'):.1f}"
-            
+                line += f"ERA {sf(row.get('EarnedRunAverage'), '.2f')}, "
+                line += f"승수 {sf(row.get('Wins'), '.0f')}승, "
+                line += f"패수 {sf(row.get('Losses'), '.0f')}패, "
+                line += f"WHIP {sf(row.get('Whip'), '.2f')}, "
+                line += f"탈삼진 {sf(row.get('StrikeOuts'), '.0f')}개, "
+                line += f"이닝 {sf(row.get('InningsPitched'), '.1f')}"
+
             summary_lines.append(line)
-        
+
         return "\n".join(summary_lines)
     
     def _prepare_league_averages_summary(self, league_data: pd.DataFrame, seasons: List[int], player_type: str) -> str:
@@ -189,22 +201,23 @@ class PlayerAnalysisAI:
             return "해당 시즌의 리그 평균 데이터가 없습니다."
         
         summary_lines = []
-        
+        sf = self._safe_format
+
         for _, row in relevant_data.iterrows():
             if player_type == "타자":
                 line = f"시즌 {row['Season']} 리그 평균: "
-                line += f"타율 {row.get('BattingAverage', 'N/A'):.3f}, "
-                line += f"홈런 {row.get('HomeRuns', 'N/A'):.1f}개, "
-                line += f"타점 {row.get('RBIs', 'N/A'):.1f}개, "
-                line += f"OPS {row.get('OPS', 'N/A'):.3f}"
+                line += f"타율 {sf(row.get('BattingAverage'), '.3f')}, "
+                line += f"홈런 {sf(row.get('HomeRuns'), '.1f')}개, "
+                line += f"타점 {sf(row.get('RBIs'), '.1f')}개, "
+                line += f"OPS {sf(row.get('OPS'), '.3f')}"
             else:  # 투수
                 line = f"시즌 {row['Season']} 리그 평균: "
-                line += f"ERA {row.get('EarnedRunAverage', 'N/A'):.2f}, "
-                line += f"WHIP {row.get('Whip', 'N/A'):.2f}, "
-                line += f"탈삼진 {row.get('StrikeOuts', 'N/A'):.1f}개"
-            
+                line += f"ERA {sf(row.get('EarnedRunAverage'), '.2f')}, "
+                line += f"WHIP {sf(row.get('Whip'), '.2f')}, "
+                line += f"탈삼진 {sf(row.get('StrikeOuts'), '.1f')}개"
+
             summary_lines.append(line)
-        
+
         return "\n".join(summary_lines)
     
     def generate_player_analysis(
@@ -249,9 +262,12 @@ class PlayerAnalysisAI:
             )
             
             response = self.llm.invoke([HumanMessage(content=formatted_prompt)])
-            
+
+            if response is None or not hasattr(response, 'content') or not response.content:
+                return "AI 응답을 받지 못했습니다. 다시 시도해주세요."
+
             return response.content
-            
+
         except Exception as e:
             logger.error(f"AI 분석 생성 중 오류 발생: {e}")
             return f"분석 보고서 생성 중 오류가 발생했습니다: {str(e)}"
@@ -306,8 +322,12 @@ class PlayerAnalysisAI:
 """
             
             response = self.llm.invoke([HumanMessage(content=comparison_prompt)])
+
+            if response is None or not hasattr(response, 'content') or not response.content:
+                return "AI 응답을 받지 못했습니다. 다시 시도해주세요."
+
             return response.content
-            
+
         except Exception as e:
             logger.error(f"비교 분석 생성 중 오류 발생: {e}")
             return f"비교 분석 보고서 생성 중 오류가 발생했습니다: {str(e)}"

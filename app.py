@@ -24,7 +24,7 @@ from PIL import Image
 from utils import set_chart_style, load_logo_image # load_logo_image 추가
 from app_metrics import init_metrics, timing_decorator
 from i18n import get_text, get_languages
-from config import MLB_LOGO_PATH # 설정 파일에서 로고 경로 가져오기
+from config import MLB_LOGO_PATH, DEFAULT_LANGUAGE, DEFAULT_CHART_THEME
 
 # 테마와 메트릭 초기화
 set_chart_style()
@@ -36,11 +36,11 @@ def main():
     
     # 세션 상태에 언어 설정이 없으면 기본값 설정
     if 'lang' not in st.session_state:
-        st.session_state.lang = "ko"
+        st.session_state.lang = DEFAULT_LANGUAGE
 
     # 세션 상태에 차트 테마 설정이 없으면 기본값 설정
     if 'chart_theme' not in st.session_state:
-        st.session_state.chart_theme = "plotly_white"
+        st.session_state.chart_theme = DEFAULT_CHART_THEME
 
     # 사이드바 설정 및 메뉴 옵션 정의
     with st.sidebar:
@@ -70,10 +70,15 @@ def main():
         # 차트 테마 선택 옵션
         from utils import get_chart_theme_options
         theme_options = get_chart_theme_options()
+        theme_values = list(theme_options.values())
+        try:
+            theme_index = theme_values.index(st.session_state.chart_theme)
+        except ValueError:
+            theme_index = 0
         selected_theme_label = st.selectbox(
             "🎨 차트 테마",
             options=list(theme_options.keys()),
-            index=list(theme_options.values()).index(st.session_state.chart_theme)
+            index=theme_index
         )
 
         # 테마가 변경되면 세션 상태 업데이트
@@ -105,27 +110,21 @@ def main():
 
     # 페이지 로깅 및 실행
     metric_tracker.log_page_view(selected)
-    
-    # 페이지별 함수 실행
+
+    # 딕셔너리 기반 라우팅
     lang = st.session_state.lang
-    home_text = get_text("home", lang)
-    search_text = get_text("search_records", lang)
-    predict_text = get_text("predict_records", lang)
-    trend_text = get_text("trend_analysis", lang)
-    compare_text = get_text("compare_players", lang)
-    
-    if selected == home_text:
-        run_home(lang)
-    elif selected == search_text:
-        run_search(lang)
-    elif selected == predict_text:
-        run_predict(lang)
-    elif selected == trend_text:
-        run_trend(lang)
-    elif selected == compare_text:
-        run_compare(lang)
-    elif selected == "📊 " + get_text("data_status", lang):
-        show_data_status(lang)
+    page_routes = {
+        get_text("home", lang): run_home,
+        get_text("trend_analysis", lang): run_trend,
+        get_text("search_records", lang): run_search,
+        get_text("compare_players", lang): run_compare,
+        get_text("predict_records", lang): run_predict,
+        "📊 " + get_text("data_status", lang): show_data_status,
+    }
+
+    page_fn = page_routes.get(selected)
+    if page_fn:
+        page_fn(lang)
 
     # 성능 모니터링 - 사이드바 하단에 표시
     with st.sidebar.expander("📊 앱 성능 메트릭"):
