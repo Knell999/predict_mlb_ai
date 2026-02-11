@@ -4,34 +4,10 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.express as px
 from streamlit_option_menu import option_menu
-from utils import load_data, load_pitcher_data, get_plotly_layout_config, get_plotly_config, display_player_image
+from utils import load_data, load_pitcher_data, get_plotly_layout_config, get_plotly_config, display_player_image, calculate_league_averages
 from i18n import get_text
+from config import BATTING_METRICS, PITCHING_METRICS
 from player_analysis_ai import PlayerAnalysisAI, is_ai_analysis_available, get_ai_analysis_status
-
-df = load_data()
-df_pitchers = load_pitcher_data()
-
-# 리그 평균 계산 함수
-def calculate_league_averages(df, metrics):
-    """
-    시즌별 리그 평균을 계산하는 함수입니다.
-
-    Args:
-        df: 분석할 데이터프레임
-        metrics: 계산할 지표들의 리스트
-
-    Returns:
-        시즌별로 그룹화된 리그 평균 데이터프레임
-    """
-    league_averages = df.groupby('Season')[metrics].mean().reset_index()
-    return league_averages
-
-# 타자와 투수의 리그 평균 계산
-batting_metrics = ['BattingAverage', 'OnBasePercentage', 'SluggingPercentage', 'OPS', 'Hits', 'RBIs', 'HomeRuns', 'StolenBases', 'Walks', 'StrikeOuts']
-pitching_metrics = ['EarnedRunAverage', 'Whip', 'Wins', 'Losses', 'StrikeOuts', 'InningsPitched', 'Walks', 'HitsAllowed']
-
-batting_league_avg = calculate_league_averages(df, batting_metrics)
-pitching_league_avg = calculate_league_averages(df_pitchers, pitching_metrics)
 
 def create_interactive_charts(player_data, league_avg, metrics, player_name, player_type):
     """
@@ -166,6 +142,11 @@ def create_comparison_bar_chart(player_data, league_data, metrics, player_name, 
 
 def run_search(lang="ko"):
     """MLB 선수 기록을 조회하고 시각화하는 함수입니다."""
+    df = load_data()
+    df_pitchers = load_pitcher_data()
+    batting_league_avg = calculate_league_averages(df, BATTING_METRICS)
+    pitching_league_avg = calculate_league_averages(df_pitchers, PITCHING_METRICS)
+
     st.title(get_text("search_title", lang))
 
     menu_options = {
@@ -211,7 +192,7 @@ def run_search(lang="ko"):
                         "InningsPitched": "{:.1f}"
                     })
 
-            if not player_data.empty:
+            if not player_data.empty and len(player_data) > 0:
                 player_id = player_data.iloc[0]['PlayerID']
 
                 col1, col2 = st.columns([1, 2])
@@ -240,9 +221,9 @@ def run_search(lang="ko"):
 
                 with st.spinner('차트를 생성하는 중...'):
                     if player_type == '타자':
-                        metrics_to_display = batting_metrics
+                        metrics_to_display = BATTING_METRICS
                     else:
-                        metrics_to_display = pitching_metrics
+                        metrics_to_display = PITCHING_METRICS
 
                     # Plotly 인터랙티브 차트 생성
                     fig = create_interactive_charts(
@@ -331,7 +312,7 @@ def run_search(lang="ko"):
                 player_data = data[(data['PlayerName'] == player) & (data['Season'] == season)]
                 league_data = league_avg[league_avg['Season'] == season]
 
-            if not player_data.empty:
+            if not player_data.empty and len(player_data) > 0:
                 player_id = player_data.iloc[0]['PlayerID']
 
                 col1, col2 = st.columns([1, 2])
@@ -364,16 +345,16 @@ def run_search(lang="ko"):
                 st.warning(f"❌ 해당 시즌에 대한 선수의 기록을 찾을 수 없습니다.")
 
     def view_bat_stats(season=None):
-        view_player_stats(df, batting_league_avg, "타자", batting_metrics, season)
+        view_player_stats(df, batting_league_avg, "타자", BATTING_METRICS, season)
 
     def view_pit_stats(season=None):
-        view_player_stats(df_pitchers, pitching_league_avg, "투수", pitching_metrics, season)
+        view_player_stats(df_pitchers, pitching_league_avg, "투수", PITCHING_METRICS, season)
 
     def view_bat_stats_by_season(season):
-        view_player_stats_by_season(df, batting_league_avg, "타자", batting_metrics, season)
+        view_player_stats_by_season(df, batting_league_avg, "타자", BATTING_METRICS, season)
 
     def view_pit_stats_by_season(season):
-        view_player_stats_by_season(df_pitchers, pitching_league_avg, "투수", pitching_metrics, season)
+        view_player_stats_by_season(df_pitchers, pitching_league_avg, "투수", PITCHING_METRICS, season)
 
     # 메뉴 선택에 따른 처리 (다국어 지원)
     if selected == selected_lang_options[0]:  # 타자(선수기준)

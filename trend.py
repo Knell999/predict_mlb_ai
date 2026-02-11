@@ -3,24 +3,9 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 from streamlit_option_menu import option_menu
-from utils import load_data, load_pitcher_data, get_plotly_config, apply_theme_to_figure
-from i18n import get_text
-
-
-# 리그 평균 계산 함수
-def calculate_league_averages(df, metrics):
-    """
-    시즌별 리그 평균을 계산하는 함수입니다.
-
-    Args:
-        df: 분석할 데이터프레임
-        metrics: 계산할 지표들의 리스트
-
-    Returns:
-        시즌별로 그룹화된 리그 평균 데이터프레임
-    """
-    league_averages = df.groupby('Season')[metrics].mean().reset_index()
-    return league_averages
+from utils import load_data, load_pitcher_data, get_plotly_config, apply_theme_to_figure, calculate_league_averages
+from i18n import get_text, get_metric_names_dict
+from config import BATTING_TREND_METRICS, PITCHING_TREND_METRICS
 
 
 # 이동평균 계산 함수
@@ -249,22 +234,21 @@ def create_comparison_area_chart(league_avg, moving_avg_5, metric, title, theme=
     return fig
 
 
-# 타자와 투수의 리그 평균 계산
-batting_metrics = ['BattingAverage', 'OnBasePercentage', 'SluggingPercentage', 'OPS', 'Hits', 'RBIs', 'HomeRuns', 'StolenBases']
-pitching_metrics = ['EarnedRunAverage', 'Whip', 'Wins', 'StrikeOuts', 'InningsPitched']
-
-df_batters = load_data()
-df_pitchers = load_pitcher_data()
-
-batting_league_avg = calculate_league_averages(df_batters, batting_metrics)
-pitching_league_avg = calculate_league_averages(df_pitchers, pitching_metrics)
-
-batting_moving_avg_5 = calculate_moving_average(batting_league_avg, batting_metrics, 5)
-pitching_moving_avg_5 = calculate_moving_average(pitching_league_avg, pitching_metrics, 5)
-
-
 def run_trend(lang="ko"):
     """리그 트렌드 분석 페이지를 실행합니다."""
+    df_batters = load_data()
+    df_pitchers = load_pitcher_data()
+
+    batting_league_avg = calculate_league_averages(df_batters, BATTING_TREND_METRICS)
+    pitching_league_avg = calculate_league_averages(df_pitchers, PITCHING_TREND_METRICS)
+
+    batting_moving_avg_5 = calculate_moving_average(batting_league_avg, BATTING_TREND_METRICS, 5)
+    pitching_moving_avg_5 = calculate_moving_average(pitching_league_avg, PITCHING_TREND_METRICS, 5)
+
+    # 메트릭명 딕셔너리 (다국어)
+    batting_metric_names = get_metric_names_dict(BATTING_TREND_METRICS, lang)
+    pitching_metric_names = get_metric_names_dict(PITCHING_TREND_METRICS, lang)
+
     st.title(get_text("trend_title", lang))
 
     # 차트 테마 가져오기
@@ -294,206 +278,94 @@ def run_trend(lang="ko"):
         }
     )
 
+    def _safe_normalize(series):
+        """안전한 정규화 (division by zero 방지)."""
+        range_val = series.max() - series.min()
+        if range_val == 0:
+            return pd.Series(0.5, index=series.index)
+        return (series - series.min()) / range_val
+
+    def _render_trend_section(league_avg, moving_avg, metrics_list, metric_names, section_label):
+        """타자/투수 트렌드 섹션을 렌더링합니다."""
+        st.subheader(f"⚾ {section_label}")
+
+        analysis_mode = st.radio(
+            "분석 모드 선택",
+            ["📊 단일 지표 애니메이션", "📈 다중 지표 비교", "🔄 이동평균 비교"],
+            horizontal=True,
+            key=f"mode_{section_label}"
+        )
+
+        if analysis_mode == "📊 단일 지표 애니메이션":
+            st.info("💡 재생 버튼을 눌러 시즌별 변화를 애니메이션으로 확인하세요!")
+
+            selected_metric = st.selectbox(
+                "분석할 지표 선택",
+                metrics_list,
+                format_func=lambda x: metric_names.get(x, x),
+                key=f"single_{section_label}"
+            )
+
+            with st.spinner('애니메이션 차트 생성 중...'):
+                fig = create_animated_trend_chart(
+                    league_avg, selected_metric,
+                    f"MLB 리그 {metric_names.get(selected_metric, selected_metric)} 변화 추이",
+                    theme
+                )
+                st.plotly_chart(fig, use_container_width=True, config=get_plotly_config())
+
+        elif analysis_mode == "📈 다중 지표 비교":
+            selected_metrics = st.multiselect(
+                "비교할 지표 선택 (최대 6개)",
+                metrics_list,
+                default=metrics_list[:2],
+                max_selections=6,
+                format_func=lambda x: metric_names.get(x, x),
+                key=f"multi_{section_label}"
+            )
+
+            if selected_metrics:
+                with st.spinner('다중 지표 차트 생성 중...'):
+                    normalized_data = league_avg.copy()
+                    for metric in selected_metrics:
+                        normalized_data[metric] = _safe_normalize(league_avg[metric])
+
+                    fig = create_multi_line_chart(
+                        normalized_data, selected_metrics,
+                        f"MLB {section_label} 비교 (정규화)", theme
+                    )
+                    st.plotly_chart(fig, use_container_width=True, config=get_plotly_config())
+                    st.info("💡 정규화된 값(0-1)으로 표시되어 서로 다른 단위의 지표를 비교할 수 있습니다.")
+            else:
+                st.warning("비교할 지표를 하나 이상 선택해주세요.")
+
+        else:  # 이동평균 비교
+            selected_metric = st.selectbox(
+                "분석할 지표 선택",
+                metrics_list,
+                format_func=lambda x: metric_names.get(x, x),
+                key=f"ma_{section_label}"
+            )
+
+            with st.spinner('이동평균 차트 생성 중...'):
+                fig = create_comparison_area_chart(
+                    league_avg, moving_avg, selected_metric,
+                    f"MLB {metric_names.get(selected_metric, selected_metric)} - 리그 평균 vs 이동평균",
+                    theme
+                )
+                st.plotly_chart(fig, use_container_width=True, config=get_plotly_config())
+                st.info("💡 이동평균은 단기 변동을 제거하고 장기 트렌드를 파악하는 데 유용합니다.")
+
     if selected == selected_lang_options[0]:  # 타자
-        st.subheader("⚾ 타자 트렌드 분석")
-
-        # 분석 모드 선택
-        analysis_mode = st.radio(
-            "분석 모드 선택",
-            ["📊 단일 지표 애니메이션", "📈 다중 지표 비교", "🔄 이동평균 비교"],
-            horizontal=True
+        _render_trend_section(
+            batting_league_avg, batting_moving_avg_5,
+            BATTING_TREND_METRICS, batting_metric_names, "타자 트렌드 분석"
         )
-
-        if analysis_mode == "📊 단일 지표 애니메이션":
-            st.info("💡 재생 버튼을 눌러 시즌별 변화를 애니메이션으로 확인하세요!")
-
-            selected_metric = st.selectbox(
-                "분석할 지표 선택",
-                batting_metrics,
-                format_func=lambda x: {
-                    'BattingAverage': '타율',
-                    'OnBasePercentage': '출루율',
-                    'SluggingPercentage': '장타율',
-                    'OPS': 'OPS',
-                    'Hits': '안타',
-                    'RBIs': '타점',
-                    'HomeRuns': '홈런',
-                    'StolenBases': '도루'
-                }.get(x, x)
-            )
-
-            with st.spinner('애니메이션 차트 생성 중...'):
-                fig = create_animated_trend_chart(
-                    batting_league_avg,
-                    selected_metric,
-                    f"MLB 리그 {selected_metric} 변화 추이",
-                    theme
-                )
-
-                st.plotly_chart(fig, use_container_width=True, config=get_plotly_config())
-
-        elif analysis_mode == "📈 다중 지표 비교":
-            selected_metrics = st.multiselect(
-                "비교할 지표 선택 (최대 6개)",
-                batting_metrics,
-                default=['BattingAverage', 'OPS'],
-                max_selections=6,
-                format_func=lambda x: {
-                    'BattingAverage': '타율',
-                    'OnBasePercentage': '출루율',
-                    'SluggingPercentage': '장타율',
-                    'OPS': 'OPS',
-                    'Hits': '안타',
-                    'RBIs': '타점',
-                    'HomeRuns': '홈런',
-                    'StolenBases': '도루'
-                }.get(x, x)
-            )
-
-            if selected_metrics:
-                with st.spinner('다중 지표 차트 생성 중...'):
-                    # 지표 정규화
-                    normalized_data = batting_league_avg.copy()
-                    for metric in selected_metrics:
-                        normalized_data[metric] = (batting_league_avg[metric] - batting_league_avg[metric].min()) / (batting_league_avg[metric].max() - batting_league_avg[metric].min())
-
-                    fig = create_multi_line_chart(
-                        normalized_data,
-                        selected_metrics,
-                        "MLB 타자 지표 비교 (정규화)",
-                        theme
-                    )
-
-                    st.plotly_chart(fig, use_container_width=True, config=get_plotly_config())
-
-                    st.info("💡 정규화된 값(0-1)으로 표시되어 서로 다른 단위의 지표를 비교할 수 있습니다.")
-            else:
-                st.warning("비교할 지표를 하나 이상 선택해주세요.")
-
-        else:  # 이동평균 비교
-            selected_metric = st.selectbox(
-                "분석할 지표 선택",
-                batting_metrics,
-                format_func=lambda x: {
-                    'BattingAverage': '타율',
-                    'OnBasePercentage': '출루율',
-                    'SluggingPercentage': '장타율',
-                    'OPS': 'OPS',
-                    'Hits': '안타',
-                    'RBIs': '타점',
-                    'HomeRuns': '홈런',
-                    'StolenBases': '도루'
-                }.get(x, x)
-            )
-
-            with st.spinner('이동평균 차트 생성 중...'):
-                fig = create_comparison_area_chart(
-                    batting_league_avg,
-                    batting_moving_avg_5,
-                    selected_metric,
-                    f"MLB {selected_metric} - 리그 평균 vs 이동평균",
-                    theme
-                )
-
-                st.plotly_chart(fig, use_container_width=True, config=get_plotly_config())
-
-                st.info("💡 이동평균은 단기 변동을 제거하고 장기 트렌드를 파악하는 데 유용합니다.")
-
     else:  # 투수
-        st.subheader("⚾ 투수 트렌드 분석")
-
-        # 분석 모드 선택
-        analysis_mode = st.radio(
-            "분석 모드 선택",
-            ["📊 단일 지표 애니메이션", "📈 다중 지표 비교", "🔄 이동평균 비교"],
-            horizontal=True
+        _render_trend_section(
+            pitching_league_avg, pitching_moving_avg_5,
+            PITCHING_TREND_METRICS, pitching_metric_names, "투수 트렌드 분석"
         )
-
-        if analysis_mode == "📊 단일 지표 애니메이션":
-            st.info("💡 재생 버튼을 눌러 시즌별 변화를 애니메이션으로 확인하세요!")
-
-            selected_metric = st.selectbox(
-                "분석할 지표 선택",
-                pitching_metrics,
-                format_func=lambda x: {
-                    'EarnedRunAverage': '평균자책점',
-                    'Whip': 'WHIP',
-                    'Wins': '승수',
-                    'StrikeOuts': '탈삼진',
-                    'InningsPitched': '이닝'
-                }.get(x, x)
-            )
-
-            with st.spinner('애니메이션 차트 생성 중...'):
-                fig = create_animated_trend_chart(
-                    pitching_league_avg,
-                    selected_metric,
-                    f"MLB 리그 {selected_metric} 변화 추이",
-                    theme
-                )
-
-                st.plotly_chart(fig, use_container_width=True, config=get_plotly_config())
-
-        elif analysis_mode == "📈 다중 지표 비교":
-            selected_metrics = st.multiselect(
-                "비교할 지표 선택 (최대 6개)",
-                pitching_metrics,
-                default=['EarnedRunAverage', 'Whip'],
-                max_selections=6,
-                format_func=lambda x: {
-                    'EarnedRunAverage': '평균자책점',
-                    'Whip': 'WHIP',
-                    'Wins': '승수',
-                    'StrikeOuts': '탈삼진',
-                    'InningsPitched': '이닝'
-                }.get(x, x)
-            )
-
-            if selected_metrics:
-                with st.spinner('다중 지표 차트 생성 중...'):
-                    # 지표 정규화
-                    normalized_data = pitching_league_avg.copy()
-                    for metric in selected_metrics:
-                        normalized_data[metric] = (pitching_league_avg[metric] - pitching_league_avg[metric].min()) / (pitching_league_avg[metric].max() - pitching_league_avg[metric].min())
-
-                    fig = create_multi_line_chart(
-                        normalized_data,
-                        selected_metrics,
-                        "MLB 투수 지표 비교 (정규화)",
-                        theme
-                    )
-
-                    st.plotly_chart(fig, use_container_width=True, config=get_plotly_config())
-
-                    st.info("💡 정규화된 값(0-1)으로 표시되어 서로 다른 단위의 지표를 비교할 수 있습니다.")
-            else:
-                st.warning("비교할 지표를 하나 이상 선택해주세요.")
-
-        else:  # 이동평균 비교
-            selected_metric = st.selectbox(
-                "분석할 지표 선택",
-                pitching_metrics,
-                format_func=lambda x: {
-                    'EarnedRunAverage': '평균자책점',
-                    'Whip': 'WHIP',
-                    'Wins': '승수',
-                    'StrikeOuts': '탈삼진',
-                    'InningsPitched': '이닝'
-                }.get(x, x)
-            )
-
-            with st.spinner('이동평균 차트 생성 중...'):
-                fig = create_comparison_area_chart(
-                    pitching_league_avg,
-                    pitching_moving_avg_5,
-                    selected_metric,
-                    f"MLB {selected_metric} - 리그 평균 vs 이동평균",
-                    theme
-                )
-
-                st.plotly_chart(fig, use_container_width=True, config=get_plotly_config())
-
-                st.info("💡 이동평균은 단기 변동을 제거하고 장기 트렌드를 파악하는 데 유용합니다.")
 
     # 차트 사용 안내
     st.markdown("---")
