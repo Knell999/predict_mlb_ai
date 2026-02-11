@@ -9,13 +9,17 @@ import logging
 from datetime import datetime, timedelta
 import os
 import sys
+from config import LOG_DIR, MLB_SEASON_START_MONTH, MLB_SEASON_END_MONTH
+
+# 로그 디렉토리 생성
+os.makedirs(LOG_DIR, exist_ok=True)
 
 # 로깅 설정
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('logs/data_update.log'),
+        logging.FileHandler(os.path.join(LOG_DIR, 'data_update.log')),
         logging.StreamHandler()
     ]
 )
@@ -24,8 +28,7 @@ logger = logging.getLogger(__name__)
 def is_season_active():
     """MLB 시즌이 활성화되어 있는지 확인"""
     now = datetime.now()
-    # 일반적으로 MLB 시즌은 3월~10월
-    return 3 <= now.month <= 10
+    return MLB_SEASON_START_MONTH <= now.month <= MLB_SEASON_END_MONTH
 
 def update_data_job():
     """스케줄된 데이터 업데이트 작업"""

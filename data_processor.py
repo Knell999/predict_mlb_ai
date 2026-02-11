@@ -11,17 +11,31 @@ from datetime import datetime, timedelta
 import logging
 from typing import List, Dict, Optional
 import os
-from config import DATA_DIR, BATTER_STATS_FILE, PITCHER_STATS_FILE
+from config import DATA_DIR, BATTER_STATS_FILE, PITCHER_STATS_FILE, MLB_API_BASE_URL, API_RATE_LIMIT_DELAY
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def _safe_float(value, default=0.0):
+    """안전한 float 변환. 실패 시 기본값 반환."""
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return default
+
+def _safe_int(value, default=0):
+    """안전한 int 변환. 실패 시 기본값 반환."""
+    try:
+        return int(float(value))
+    except (ValueError, TypeError):
+        return default
+
 class MLBDataProcessor:
     """MLB 데이터 수집 및 처리 클래스"""
-    
+
     def __init__(self):
-        self.base_url = "https://statsapi.mlb.com/api/v1"
+        self.base_url = MLB_API_BASE_URL
         self.session = requests.Session()
         self.session.headers.update({
             'User-Agent': 'MLB-Stats-App/1.0'
@@ -118,21 +132,21 @@ class MLBDataProcessor:
                                     'PlayerName': player_info['fullName'],
                                     'Season': season,
                                     'Team': team['name'],
-                                    'BattingAverage': float(batting_stats.get('avg', 0)),
-                                    'OnBasePercentage': float(batting_stats.get('obp', 0)),
-                                    'SluggingPercentage': float(batting_stats.get('slg', 0)),
-                                    'OPS': float(batting_stats.get('ops', 0)),
-                                    'Hits': int(batting_stats.get('hits', 0)),
-                                    'RBIs': int(batting_stats.get('rbi', 0)),
-                                    'HomeRuns': int(batting_stats.get('homeRuns', 0)),
-                                    'StolenBases': int(batting_stats.get('stolenBases', 0)),
-                                    'Walks': int(batting_stats.get('baseOnBalls', 0)),
-                                    'StrikeOuts': int(batting_stats.get('strikeOuts', 0))
+                                    'BattingAverage': _safe_float(batting_stats.get('avg', 0)),
+                                    'OnBasePercentage': _safe_float(batting_stats.get('obp', 0)),
+                                    'SluggingPercentage': _safe_float(batting_stats.get('slg', 0)),
+                                    'OPS': _safe_float(batting_stats.get('ops', 0)),
+                                    'Hits': _safe_int(batting_stats.get('hits', 0)),
+                                    'RBIs': _safe_int(batting_stats.get('rbi', 0)),
+                                    'HomeRuns': _safe_int(batting_stats.get('homeRuns', 0)),
+                                    'StolenBases': _safe_int(batting_stats.get('stolenBases', 0)),
+                                    'Walks': _safe_int(batting_stats.get('baseOnBalls', 0)),
+                                    'StrikeOuts': _safe_int(batting_stats.get('strikeOuts', 0))
                                 }
                                 all_batting_data.append(row)
                 
                 # API 호출 제한을 위한 지연
-                time.sleep(0.1)
+                time.sleep(API_RATE_LIMIT_DELAY)
         
         return pd.DataFrame(all_batting_data)
     
@@ -167,19 +181,19 @@ class MLBDataProcessor:
                                     'PlayerName': player_info['fullName'],
                                     'Season': season,
                                     'Team': team['name'],
-                                    'EarnedRunAverage': float(pitching_stats.get('era', 0)),
-                                    'Whip': float(pitching_stats.get('whip', 0)),
-                                    'Wins': int(pitching_stats.get('wins', 0)),
-                                    'Losses': int(pitching_stats.get('losses', 0)),
-                                    'StrikeOuts': int(pitching_stats.get('strikeOuts', 0)),
-                                    'InningsPitched': float(pitching_stats.get('inningsPitched', 0)),
-                                    'Walks': int(pitching_stats.get('baseOnBalls', 0)),
-                                    'HitsAllowed': int(pitching_stats.get('hits', 0))
+                                    'EarnedRunAverage': _safe_float(pitching_stats.get('era', 0)),
+                                    'Whip': _safe_float(pitching_stats.get('whip', 0)),
+                                    'Wins': _safe_int(pitching_stats.get('wins', 0)),
+                                    'Losses': _safe_int(pitching_stats.get('losses', 0)),
+                                    'StrikeOuts': _safe_int(pitching_stats.get('strikeOuts', 0)),
+                                    'InningsPitched': _safe_float(pitching_stats.get('inningsPitched', 0)),
+                                    'Walks': _safe_int(pitching_stats.get('baseOnBalls', 0)),
+                                    'HitsAllowed': _safe_int(pitching_stats.get('hits', 0))
                                 }
                                 all_pitching_data.append(row)
                 
                 # API 호출 제한을 위한 지연
-                time.sleep(0.1)
+                time.sleep(API_RATE_LIMIT_DELAY)
         
         return pd.DataFrame(all_pitching_data)
     

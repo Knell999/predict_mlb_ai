@@ -43,8 +43,8 @@ class PyBaseballDataProcessor:
                 yearly_data = batting_stats(year, qual=50)  # 최소 50타석 이상
                 
                 if not yearly_data.empty:
-                    # 컬럼명 매핑
-                    yearly_data = yearly_data.rename(columns={
+                    # 컬럼명 매핑 (존재하는 컬럼만)
+                    column_mapping = {
                         'IDfg': 'PlayerID',
                         'Name': 'PlayerName',
                         'AVG': 'BattingAverage',
@@ -57,7 +57,9 @@ class PyBaseballDataProcessor:
                         'SB': 'StolenBases',
                         'BB': 'Walks',
                         'SO': 'StrikeOuts'
-                    })
+                    }
+                    safe_mapping = {k: v for k, v in column_mapping.items() if k in yearly_data.columns}
+                    yearly_data = yearly_data.rename(columns=safe_mapping)
                     
                     # 시즌 컬럼 추가
                     yearly_data['Season'] = year
@@ -103,8 +105,8 @@ class PyBaseballDataProcessor:
                 yearly_data = pitching_stats(year, qual=20)  # 최소 20이닝 이상
                 
                 if not yearly_data.empty:
-                    # 컬럼명 매핑
-                    yearly_data = yearly_data.rename(columns={
+                    # 컬럼명 매핑 (존재하는 컬럼만)
+                    column_mapping = {
                         'IDfg': 'PlayerID',
                         'Name': 'PlayerName',
                         'ERA': 'EarnedRunAverage',
@@ -115,7 +117,9 @@ class PyBaseballDataProcessor:
                         'IP': 'InningsPitched',
                         'BB': 'Walks',
                         'H': 'HitsAllowed'
-                    })
+                    }
+                    safe_mapping = {k: v for k, v in column_mapping.items() if k in yearly_data.columns}
+                    yearly_data = yearly_data.rename(columns=safe_mapping)
                     
                     # 시즌 컬럼 추가
                     yearly_data['Season'] = year
