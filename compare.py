@@ -3,7 +3,8 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from utils import load_data, load_pitcher_data, get_plotly_config, apply_theme_to_figure, display_player_image
-from i18n import get_text
+from i18n import get_text, get_metric_names_dict
+from config import BATTER_METRIC_NAMES, PITCHER_METRIC_NAMES
 
 
 def create_radar_chart(players_data, player_names, metrics, theme="plotly_white"):
@@ -151,26 +152,10 @@ def run_compare(lang):
 
     if data_type == get_text("batter", lang):
         df = load_data()
-        stats_options = {
-            'BattingAverage': '타율',
-            'HomeRuns': '홈런',
-            'RBIs': '타점',
-            'OPS': 'OPS',
-            'Hits': '안타',
-            'StolenBases': '도루',
-            'OnBasePercentage': '출루율',
-            'SluggingPercentage': '장타율'
-        }
+        stats_options = get_metric_names_dict(list(BATTER_METRIC_NAMES.keys()), lang)
     else:
         df = load_pitcher_data()
-        stats_options = {
-            'EarnedRunAverage': '평균자책점',
-            'Wins': '승수',
-            'StrikeOuts': '탈삼진',
-            'Whip': 'WHIP',
-            'InningsPitched': '이닝',
-            'Losses': '패수'
-        }
+        stats_options = get_metric_names_dict(list(PITCHER_METRIC_NAMES.keys()), lang)
 
     if df is None or df.empty:
         st.warning(get_text("no_data_available", lang))
@@ -238,6 +223,8 @@ def run_compare(lang):
     cols = st.columns(len(selected_players))
     for idx, (col, player, player_data) in enumerate(zip(cols, selected_players, players_data)):
         with col:
+            if player_data.empty:
+                continue
             player_id = player_data.iloc[0]['PlayerID']
             display_player_image(player_id, player, width=150)
             st.markdown(f"**{player}**")

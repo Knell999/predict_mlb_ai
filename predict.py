@@ -5,28 +5,32 @@ import numpy as np
 from prophet import Prophet
 from utils import load_data, load_pitcher_data, get_plotly_config, display_player_image
 from streamlit_option_menu import option_menu
-from i18n import get_text
+from i18n import get_text, get_metric_names_dict
+from config import PREDICT_BATTER_METRICS, PREDICT_PITCHER_METRICS
 
 
-@st.cache_resource
+@st.cache_data(ttl=3600)
 def get_prophet_forecast(data, metric, periods=5):
     """
     Prophet 모델을 학습하고 예측을 수행합니다.
     Streamlit 캐싱을 통해 반복 학습을 방지합니다.
     """
-    df_metric = data[['Season', metric]].copy()
-    df_metric.columns = ['ds', 'y']
+    try:
+        df_metric = data[['Season', metric]].copy()
+        df_metric.columns = ['ds', 'y']
 
-    model = Prophet(
-        yearly_seasonality=False,
-        weekly_seasonality=False,
-        daily_seasonality=False
-    )
-    model.fit(df_metric)
+        model = Prophet(
+            yearly_seasonality=False,
+            weekly_seasonality=False,
+            daily_seasonality=False
+        )
+        model.fit(df_metric)
 
-    future = model.make_future_dataframe(periods=periods, freq='Y')
-    forecast = model.predict(future)
-    return forecast
+        future = model.make_future_dataframe(periods=periods, freq='Y')
+        forecast = model.predict(future)
+        return forecast
+    except Exception as e:
+        return None
 
 
 def create_prediction_plot(player_data, forecast, metric, player_name, lang="ko"):
@@ -146,23 +150,11 @@ def run_predict(lang="ko"):
     if selected == batter_option:
         df = load_data()
         player_names = [""] + sorted(df['PlayerName'].unique())
-        metrics = {
-            'BattingAverage': '타율',
-            'OnBasePercentage': '출루율',
-            'SluggingPercentage': '장타율',
-            'OPS': 'OPS'
-        }
+        metrics = get_metric_names_dict(list(PREDICT_BATTER_METRICS.keys()), lang)
     else:
         df = load_pitcher_data()
         player_names = [""] + sorted(df['PlayerName'].unique())
-        metrics = {
-            'EarnedRunAverage': '평균자책점',
-            'Wins': '승수',
-            'Losses': '패수',
-            'StrikeOuts': '탈삼진',
-            'Whip': 'WHIP',
-            'InningsPitched': '이닝'
-        }
+        metrics = get_metric_names_dict(list(PREDICT_PITCHER_METRICS.keys()), lang)
 
     st.header(get_text("player_option", lang))
 
@@ -176,7 +168,7 @@ def run_predict(lang="ko"):
 
     player_data = df[df['PlayerName'] == player]
 
-    if not player_data.empty:
+    if not player_data.empty and len(player_data) > 0:
         tab1, tab2 = st.tabs([get_text("player_info", lang), get_text("prediction_tab", lang)])
 
         with tab1:
@@ -258,6 +250,10 @@ def run_predict(lang="ko"):
 
                         # 예측 수행
                         forecast = get_prophet_forecast(player_data_copy, metric, periods=prediction_years)
+
+                        if forecast is None:
+                            st.error(f"{metrics[metric]} 예측에 실패했습니다.")
+                            continue
 
                         # 예측 차트 생성
                         st.subheader(f"📈 {metrics[metric]} 예측 결과")
