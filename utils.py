@@ -4,48 +4,43 @@ from PIL import Image
 import os
 import numpy as np
 from matplotlib import pyplot as plt
-from config import BATTER_STATS_FILE, PITCHER_STATS_FILE, FONT_PATH, MLB_LOGO_PATH
+from config import (
+    BATTER_STATS_FILE, PITCHER_STATS_FILE, FONT_PATH, MLB_LOGO_PATH,
+    DATA_START_YEAR, DATA_END_YEAR, MLB_IMAGE_CDN_URL, CACHE_TTL_SECONDS,
+)
 
-# 데이터 캐싱 및 로드 기능 향상
-@st.cache_data(ttl=3600, show_spinner=True)  # 1시간 TTL 설정
+def _load_csv_file(file_path, data_name, fallback_fn):
+    """CSV 파일을 로드하고 전처리합니다. 실패 시 fallback 함수를 호출합니다."""
+    try:
+        df = pd.read_csv(file_path)
+        df = df.rename(columns=lambda x: x.strip())
+        numeric_cols = df.select_dtypes(include=np.number).columns
+        df[numeric_cols] = df[numeric_cols].fillna(0)
+        return df
+    except FileNotFoundError:
+        st.error(f"{data_name} 데이터 파일을 찾을 수 없습니다: {file_path}")
+        st.info("샘플 데이터를 대신 사용합니다.")
+        return fallback_fn()
+    except Exception as e:
+        st.error(f"{data_name} 데이터 로드 중 오류 발생: {e}")
+        st.info("샘플 데이터를 대신 사용합니다.")
+        return fallback_fn()
+
+@st.cache_data(ttl=CACHE_TTL_SECONDS, show_spinner=True)
 def load_data():
-    """타자 데이터를 로드합니다. 파일 경로를 config에서 가져옵니다."""
-    try:
-        df = pd.read_csv(BATTER_STATS_FILE)
-        # 데이터 클리닝 또는 전처리 (예시)
-        df = df.rename(columns=lambda x: x.strip()) # 컬럼명 공백 제거
-        numeric_cols = df.select_dtypes(include=np.number).columns
-        df[numeric_cols] = df[numeric_cols].fillna(0) # 숫자형 컬럼 NaN 0으로 채우기
-        return df
-    except FileNotFoundError:
-        st.error(f"타자 데이터 파일을 찾을 수 없습니다: {BATTER_STATS_FILE}")
-        st.info("샘플 데이터를 대신 사용합니다.")
-        return _create_sample_batter_data()
-    except Exception as e:
-        st.error(f"타자 데이터 로드 중 오류 발생: {e}")
-        st.info("샘플 데이터를 대신 사용합니다.")
-        return _create_sample_batter_data()
+    """타자 데이터를 로드합니다."""
+    return _load_csv_file(BATTER_STATS_FILE, "타자", _create_sample_batter_data)
 
-@st.cache_data(ttl=3600, show_spinner=True)  # 1시간 TTL 설정
+@st.cache_data(ttl=CACHE_TTL_SECONDS, show_spinner=True)
 def load_pitcher_data():
-    """투수 데이터를 로드합니다. 파일 경로를 config에서 가져옵니다."""
-    try:
-        df = pd.read_csv(PITCHER_STATS_FILE)
-        # 데이터 클리닝 또는 전처리 (예시)
-        df = df.rename(columns=lambda x: x.strip()) # 컬럼명 공백 제거
-        numeric_cols = df.select_dtypes(include=np.number).columns
-        df[numeric_cols] = df[numeric_cols].fillna(0) # 숫자형 컬럼 NaN 0으로 채우기
-        return df
-    except FileNotFoundError:
-        st.error(f"투수 데이터 파일을 찾을 수 없습니다: {PITCHER_STATS_FILE}")
-        st.info("샘플 데이터를 대신 사용합니다.")
-        return _create_sample_pitcher_data()
-    except Exception as e:
-        st.error(f"투수 데이터 로드 중 오류 발생: {e}")
-        st.info("샘플 데이터를 대신 사용합니다.")
-        return _create_sample_pitcher_data()
+    """투수 데이터를 로드합니다."""
+    return _load_csv_file(PITCHER_STATS_FILE, "투수", _create_sample_pitcher_data)
 
-def load_logo_image(image_path=MLB_LOGO_PATH): # 기본값을 config에서 가져오도록 수정
+def calculate_league_averages(df, metrics):
+    """시즌별 리그 평균을 계산합니다."""
+    return df.groupby('Season')[metrics].mean().reset_index()
+
+def load_logo_image(image_path=MLB_LOGO_PATH):
     """로고 이미지를 로드합니다."""
     try:
         if not os.path.exists(image_path):
@@ -59,7 +54,7 @@ def load_logo_image(image_path=MLB_LOGO_PATH): # 기본값을 config에서 가�
 # 샘플 데이터 생성 함수들 (로드 실패 시 사용)
 def _create_sample_batter_data():
     """데이터 로드 실패 시 사용할 타자 샘플 데이터를 생성합니다."""
-    seasons = list(range(2000, 2024))
+    seasons = list(range(DATA_START_YEAR, DATA_END_YEAR))
     player_names = ["Mike Trout", "Aaron Judge", "Shohei Ohtani"]
     player_ids = ["1234567", "7654321", "9876543"]
     
@@ -85,7 +80,7 @@ def _create_sample_batter_data():
 
 def _create_sample_pitcher_data():
     """데이터 로드 실패 시 사용할 투수 샘플 데이터를 생성합니다."""
-    seasons = list(range(2000, 2024))
+    seasons = list(range(DATA_START_YEAR, DATA_END_YEAR))
     player_names = ["Clayton Kershaw", "Jacob deGrom", "Gerrit Cole"]
     player_ids = ["1234568", "7654322", "9876544"]
     
@@ -138,7 +133,7 @@ import seaborn as sns # seaborn 임포트 추가
 
 def get_player_image_url(player_id):
     """선수의 프로필 이미지 URL을 생성합니다."""
-    return f"https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_426,q_auto:best/v1/people/{player_id}/headshot/67/current"
+    return MLB_IMAGE_CDN_URL.format(player_id=player_id)
 
 def get_placeholder_image():
     """
