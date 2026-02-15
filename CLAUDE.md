@@ -203,3 +203,234 @@ tail -100 logs/app_$(date +%Y%m%d).log
 - Batters: 2000-2025 (4,502 records)
 - Pitchers: 2000-2025 (2,813 records)
 - Updated: February 2026
+
+## Testing
+
+This project uses pytest for automated testing.
+
+### Running Tests
+
+```bash
+# Run all tests
+uv run pytest tests/ -v
+
+# Run with coverage
+uv run pytest tests/ --cov --cov-report=html
+
+# Run specific test categories
+uv run pytest tests/unit/ -v              # Unit tests only
+uv run pytest tests/integration/ -v      # Integration tests only
+uv run pytest tests/data/ -v             # Data quality tests only
+
+# Run tests with specific markers
+uv run pytest tests/ -m unit             # Only unit tests
+uv run pytest tests/ -m "not slow"       # Skip slow tests
+
+# View coverage report
+open htmlcov/index.html
+```
+
+### Test Structure
+
+```
+tests/
+├── conftest.py              # Shared fixtures and configuration
+├── unit/                    # Unit tests
+│   ├── test_config.py       # Configuration constants tests
+│   ├── test_i18n.py         # Internationalization tests
+│   └── test_utils.py        # Utility functions tests
+├── integration/             # Integration tests
+│   ├── test_data_update.py  # Data collection tests
+│   └── test_data_processor.py # Data processor tests
+└── data/                    # Data quality tests
+    └── test_data_quality.py # Data integrity and quality tests
+```
+
+### Test Dependencies
+
+```bash
+# Install test dependencies
+uv sync
+uv pip install -e ".[test]"
+
+# Or manually install
+uv pip install pytest pytest-cov pytest-mock
+```
+
+## Docker Deployment
+
+This project includes Docker support for containerized deployment.
+
+### Local Development with Docker Compose
+
+```bash
+# Build and run
+docker-compose up --build
+
+# Run in detached mode
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop containers
+docker-compose down
+```
+
+The app will be available at http://localhost:8501
+
+### Production Docker Build
+
+```bash
+# Build Docker image
+docker build -t mlb-predict-ai .
+
+# Run container
+docker run -p 8501:8501 --env-file .env mlb-predict-ai
+
+# Run with environment variables
+docker run -p 8501:8501 \
+  -e GOOGLE_AI_API_KEY=your_key \
+  mlb-predict-ai
+
+# Run with volume mounts
+docker run -p 8501:8501 \
+  -v $(pwd)/data:/app/data \
+  -v $(pwd)/logs:/app/logs \
+  mlb-predict-ai
+```
+
+### Pull from GitHub Container Registry
+
+```bash
+# Pull latest image
+docker pull ghcr.io/yourusername/predict_mlb_ai:latest
+
+# Run pulled image
+docker run -p 8501:8501 ghcr.io/yourusername/predict_mlb_ai:latest
+```
+
+### Docker Image Details
+
+- **Base Image**: python:3.11-slim
+- **Size**: ~500-600MB (optimized with multi-stage build)
+- **User**: Non-root user (mlbuser) for security
+- **Health Check**: Built-in health check on Streamlit endpoint
+- **Includes**: Application code, data files, Korean font, static assets
+
+## CI/CD
+
+This project uses GitHub Actions for continuous integration and deployment.
+
+### Workflows
+
+**`.github/workflows/ci.yml`** - Main CI/CD Pipeline
+
+Triggers:
+- Push to `main` branch
+- Pull requests to `main` branch
+- Manual trigger via `workflow_dispatch`
+
+Jobs:
+1. **test**: Run pytest suite with coverage reporting
+2. **build**: Build Docker image (runs after tests pass)
+3. **push**: Push Docker image to GHCR (only on main branch merge)
+
+### GitHub Actions Usage
+
+```bash
+# Workflow runs automatically on:
+git push origin main                    # Push to main
+git push origin feature-branch          # Create PR
+
+# Manual trigger:
+# Go to Actions tab → CI/CD Pipeline → Run workflow
+```
+
+### Setting Up CI/CD
+
+1. **GitHub Secrets** (if using external registries):
+   - `CODECOV_TOKEN`: (Optional) For coverage reporting
+
+2. **Permissions**:
+   - Ensure GitHub Actions has write permissions for packages (GHCR)
+   - Settings → Actions → General → Workflow permissions → Read and write permissions
+
+3. **Docker Image**:
+   - Images are automatically pushed to `ghcr.io/<username>/<repo>:latest`
+   - Tagged with commit SHA for versioning
+
+### CI/CD Features
+
+- ✅ Automated testing on every PR
+- ✅ Code coverage reporting
+- ✅ Docker layer caching for fast builds
+- ✅ Multi-stage Docker builds for optimized images
+- ✅ Automatic deployment on main branch merge
+- ✅ Version tagging with commit SHA
+
+### Build Status
+
+You can add a badge to README.md:
+
+```markdown
+![CI/CD](https://github.com/username/predict_mlb_ai/workflows/CI%2FCD%20Pipeline/badge.svg)
+```
+
+## Troubleshooting
+
+### Docker Issues
+
+**Issue**: Container fails to start
+```bash
+# Check logs
+docker-compose logs mlb-app
+
+# Check health status
+docker ps
+
+# Restart container
+docker-compose restart
+```
+
+**Issue**: Permission denied errors
+```bash
+# Ensure proper file ownership
+sudo chown -R 1000:1000 data/ logs/
+
+# Or run with current user
+docker-compose run --user $(id -u):$(id -g) mlb-app
+```
+
+### Test Issues
+
+**Issue**: Tests fail with import errors
+```bash
+# Ensure dependencies are installed
+uv sync
+uv pip install -e ".[test]"
+
+# Check Python path
+uv run python -c "import sys; print('\n'.join(sys.path))"
+```
+
+**Issue**: Data file not found errors
+```bash
+# Ensure data files exist
+ls -lh data/
+
+# Run data update if needed
+python update_data.py --start-year 2024
+```
+
+### CI/CD Issues
+
+**Issue**: GitHub Actions workflow fails
+- Check workflow logs in Actions tab
+- Verify secrets are configured
+- Ensure uv.lock is committed to repository
+
+**Issue**: Docker push fails
+- Verify GitHub token permissions
+- Check package visibility settings
+- Ensure workflow has write permissions

@@ -24,3 +24,13 @@ Thumbs.db
 # Backup files
 *_backup_*.csv
 *.bak
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+.tox/
+
+# CI/CD
+.github/workflows/*.log
