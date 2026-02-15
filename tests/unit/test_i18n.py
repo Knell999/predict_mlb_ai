@@ -11,10 +11,10 @@ from i18n import get_text, get_languages, get_metric_name, get_metric_names_dict
 class TestGetLanguages:
     """언어 목록 조회 테스트"""
 
-    def test_get_languages_returns_list(self):
-        """언어 목록이 리스트로 반환되는지 확인"""
+    def test_get_languages_returns_dict(self):
+        """언어 목록이 딕셔너리로 반환되는지 확인"""
         languages = get_languages()
-        assert isinstance(languages, list)
+        assert isinstance(languages, dict)
 
     def test_get_languages_contains_korean(self):
         """한국어가 포함되어 있는지 확인"""

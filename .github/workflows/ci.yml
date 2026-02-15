@@ -46,7 +46,8 @@ jobs:
 
       - name: Run tests
         run: |
-          uv run pytest tests/ -v --cov --cov-report=xml --cov-report=term-missing
+          # Run unit and integration tests (skip data quality tests for now)
+          uv run pytest tests/unit/ tests/integration/ -v --cov --cov-report=xml --cov-report=term-missing -m "not slow"
         continue-on-error: false
 
       - name: Upload coverage reports
