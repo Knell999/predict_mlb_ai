@@ -153,9 +153,11 @@ def run_compare(lang):
     if data_type == get_text("batter", lang):
         df = load_data()
         stats_options = get_metric_names_dict(list(BATTER_METRIC_NAMES.keys()), lang)
+        player_type_key = "batter"
     else:
         df = load_pitcher_data()
         stats_options = get_metric_names_dict(list(PITCHER_METRIC_NAMES.keys()), lang)
+        player_type_key = "pitcher"
 
     if df is None or df.empty:
         st.warning(get_text("no_data_available", lang))
@@ -231,7 +233,13 @@ def run_compare(lang):
             st.metric("통산 시즌", len(player_data))
 
     # 탭으로 구분
-    tab1, tab2, tab3, tab4 = st.tabs(["📊 통계 비교", "🕸️ 레이더 차트", "📈 시즌별 추이", "📋 상세 데이터"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        "📊 " + get_text("tab_stat_compare", lang),
+        "🕸️ " + get_text("tab_radar_chart", lang),
+        "📈 " + get_text("tab_season_trend", lang),
+        "📋 " + get_text("tab_detail_data", lang),
+        "🔍 " + get_text("similar_players_title", lang),
+    ])
 
     with tab1:
         st.subheader("통계 비교 (평균)")
@@ -281,9 +289,48 @@ def run_compare(lang):
                 display_data = player_data[['Season'] + selected_stats].sort_values('Season', ascending=False)
                 st.dataframe(display_data, use_container_width=True, height=300)
 
+    with tab5:
+        st.subheader("🔍 " + get_text("similar_players_title", lang))
+        if selected_players:
+            ref_player = st.selectbox(
+                get_text("similarity_search", lang),
+                selected_players,
+                key="sim_ref_player",
+            )
+            if st.button("🔍 " + get_text("similarity_search", lang), key="sim_search_btn", use_container_width=True):
+                from agents.base import is_llm_available
+                with st.spinner(get_text("agent_thinking", lang)):
+                    try:
+                        from agents.similarity.graph import create_similarity_agent
+                        agent = create_similarity_agent()
+                        result = agent.invoke({
+                            "query": ref_player,
+                            "target_player": ref_player,
+                            "target_metrics": None,
+                            "player_type": player_type_key,
+                            "season_filter": None,
+                            "top_n": 10,
+                            "similarity_metrics": list(selected_stats),
+                            "candidates": [],
+                            "explanation": "",
+                            "lang": lang,
+                            "error": None,
+                        })
+                        candidates = result.get("candidates", [])
+                        if candidates:
+                            import pandas as pd
+                            sim_df = pd.DataFrame(candidates)
+                            st.dataframe(sim_df, use_container_width=True)
+                        if result.get("explanation"):
+                            st.markdown(result["explanation"])
+                        elif not candidates:
+                            st.info(get_text("no_data_available", lang))
+                    except Exception as e:
+                        st.error(f"{get_text('agent_error', lang)}: {str(e)}")
+
     # 차트 사용 안내
     st.markdown("---")
-    st.info("💡 **차트 사용법**: 차트 위에 마우스를 올리면 확대/축소, 다운로드 등의 기능을 사용할 수 있습니다.")
+    st.info("💡 " + get_text("chart_usage_tip", lang))
 
 
 if __name__ == "__main__":
