@@ -239,6 +239,36 @@ def run_search(lang="ko"):
                     # 차트 다운로드 안내
                     st.info("💡 차트 위에 마우스를 올리면 확대/축소, 다운로드 등의 기능을 사용할 수 있습니다.")
 
+                # 종합 보고서 생성 (Report Agent)
+                st.markdown("---")
+
+                from agents.base import is_llm_available as _is_llm_avail
+                if _is_llm_avail():
+                    if st.button(f"📄 {get_text('generate_report', lang)}", key=f"report_{player}", use_container_width=True):
+                        with st.spinner(get_text("agent_thinking", lang)):
+                            try:
+                                from agents.report import create_report_agent
+                                report_agent = create_report_agent()
+                                report_result = report_agent.invoke({
+                                    "player_name": player,
+                                    "player_type": "batter" if player_type == "타자" else "pitcher",
+                                    "report_type": "full",
+                                    "include_predictions": True,
+                                    "lang": lang,
+                                })
+                                full_report = report_result.get("full_report", "")
+                                if full_report:
+                                    st.markdown(full_report)
+                                    st.download_button(
+                                        label="📥 보고서 다운로드",
+                                        data=full_report,
+                                        file_name=f"{player}_full_report.md",
+                                        mime="text/markdown",
+                                        key=f"dl_report_{player}",
+                                    )
+                            except Exception as e:
+                                st.error(f"{get_text('agent_error', lang)}: {e}")
+
                 # AI 분석 기능
                 st.markdown("---")
 
