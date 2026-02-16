@@ -20,6 +20,7 @@ from predict import run_predict
 from trend import run_trend
 from compare import run_compare
 from data_status import show_data_status
+from chat_page import run_chat
 from PIL import Image
 from utils import set_chart_style, load_logo_image # load_logo_image 추가
 from app_metrics import init_metrics, timing_decorator
@@ -90,14 +91,15 @@ def main():
         selected = option_menu(
             None,
             [
-                get_text("home", st.session_state.lang), 
-                get_text("trend_analysis", st.session_state.lang), 
-                get_text("search_records", st.session_state.lang), 
+                get_text("home", st.session_state.lang),
+                get_text("trend_analysis", st.session_state.lang),
+                get_text("search_records", st.session_state.lang),
                 get_text("compare_players", st.session_state.lang),
                 get_text("predict_records", st.session_state.lang),
-                "📊 " + get_text("data_status", st.session_state.lang)
+                "🤖 " + get_text("ai_chat", st.session_state.lang),
+                "📊 " + get_text("data_status", st.session_state.lang),
             ],
-            icons=["house", "activity", "search", "people", "magic", "database"],
+            icons=["house", "activity", "search", "people", "magic", "chat-dots", "database"],
             menu_icon="cast",
             default_index=0,
             orientation="vertical",  # 메뉴 세로 방향으로 변경
@@ -119,6 +121,7 @@ def main():
         get_text("search_records", lang): run_search,
         get_text("compare_players", lang): run_compare,
         get_text("predict_records", lang): run_predict,
+        "🤖 " + get_text("ai_chat", lang): run_chat,
         "📊 " + get_text("data_status", lang): show_data_status,
     }
 
