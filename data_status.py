@@ -158,6 +158,29 @@ def show_data_status(lang="ko"):
                 top_k = recent_pitchers.loc[recent_pitchers['StrikeOuts'].idxmax()]
                 st.write(f"**최다 탈삼진**: {top_k['PlayerName']} ({top_k['StrikeOuts']}개)")
     
+    # AI 품질 분석
+    st.header("🤖 " + get_text("run_ai_quality_check", lang))
+
+    from agents.base import is_llm_available
+    if is_llm_available():
+        if st.button(f"🔬 {get_text('run_ai_quality_check', lang)}", use_container_width=True):
+            with st.spinner(get_text("agent_thinking", lang)):
+                try:
+                    from agents.quality import create_quality_agent
+                    agent = create_quality_agent()
+                    result = agent.invoke({"trigger": "manual", "lang": lang})
+                    st.markdown(result.get("report_markdown", ""))
+                    recommendations = result.get("recommendations", [])
+                    if recommendations:
+                        st.subheader(get_text("quality_recommendations", lang))
+                        for rec in recommendations:
+                            st.write(f"- {rec}")
+                except Exception as e:
+                    st.error(f"{get_text('agent_error', lang)}: {e}")
+    else:
+        with st.expander("💡 AI 품질 분석 기능 안내"):
+            st.info("AI 품질 분석을 사용하려면 GOOGLE_AI_API_KEY 환경변수를 설정하세요.")
+
     # 데이터 품질 체크
     st.header("🔍 데이터 품질 체크")
     
