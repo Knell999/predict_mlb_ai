@@ -50,8 +50,11 @@ dependencies = [
     "streamlit-option-menu>=0.3.2",
     # AI Analysis libraries (Optional)
     "langchain>=0.3.0",
+    "langchain-core>=0.3.0",
     "langchain-google-genai>=2.0.0",
     "google-generativeai>=0.8.0",
+    # LangGraph AI Agent framework
+    "langgraph>=0.2.0",
     "plotly>=6.2.0",
     "python-dotenv>=1.1.1",
     "pybaseball>=2.2.7",
@@ -107,4 +110,5 @@ markers = [
     "integration: Integration tests",
     "data: Data quality tests",
     "slow: Tests that take longer to run",
+    "agent: Agent-specific tests",
 ]
