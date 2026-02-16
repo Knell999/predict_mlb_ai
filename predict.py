@@ -310,6 +310,31 @@ def run_predict(lang="ko"):
 
                 st.info("💡 차트 위에 마우스를 올리면 확대/축소, 다운로드 등의 기능을 사용할 수 있습니다.")
 
+                # AI 예측 해석 버튼
+                from agents.base import is_llm_available
+                if is_llm_available():
+                    st.markdown("---")
+                    if st.button("🤖 " + get_text("ai_prediction_explain", lang), use_container_width=True):
+                        with st.spinner(get_text("agent_thinking", lang)):
+                            try:
+                                from agents.prediction.graph import create_prediction_agent
+                                agent = create_prediction_agent()
+                                result = agent.invoke({
+                                    "player_name": player,
+                                    "player_type": "batter" if selected == batter_option else "pitcher",
+                                    "metrics": selected_metrics,
+                                    "prediction_years": prediction_years,
+                                    "player_data": None, "data_seasons": 0,
+                                    "data_adequate": False, "data_assessment": "",
+                                    "player_age_curve": None, "similar_players_context": None,
+                                    "forecasts": {}, "interpretation": "",
+                                    "confidence_assessment": "", "lang": lang, "error": None,
+                                })
+                                st.markdown(f"**{get_text('prediction_confidence', lang)}**: {result.get('confidence_assessment', '')}")
+                                st.markdown(result.get("interpretation", ""))
+                            except Exception as e:
+                                st.error(f"{get_text('agent_error', lang)}: {str(e)}")
+
     else:
         no_data_msg = {
             'ko': "선수 데이터가 존재하지 않습니다.",
